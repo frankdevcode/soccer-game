@@ -4,6 +4,8 @@
 #include "GameFramework/GameState.h"
 #include "GameFramework/PlayerController.h"
 #include "Game/SoccerGameState.h"
+#include "Tools/SoccerMatchManager.h"
+#include "Tools/SoccerTeamManager.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASoccerGameMode::ASoccerGameMode()
@@ -31,6 +33,8 @@ void ASoccerGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitializeMatch(PlayersPerTeam, MatchDurationSeconds);
+
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerGameMode] Game mode initialized"));
 }
 
@@ -38,10 +42,33 @@ void ASoccerGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bMatchActive && !bMatchPaused)
+	if (!bMatchActive || bMatchPaused)
 	{
-		UpdateMatchTime(DeltaTime);
-		CheckMatchConditions();
+		return;
+	}
+
+	USoccerMatchManager* MatchManager = USoccerMatchManager::Get();
+	if (!MatchManager)
+	{
+		return;
+	}
+
+	MatchManager->Tick(DeltaTime);
+	const FSoccerMatchSummary MatchSummary = MatchManager->GetSummary();
+	MatchElapsedTime = MatchSummary.ElapsedTime;
+
+	if (!MatchSummary.bIsActive)
+	{
+		EndMatch(MatchSummary.WinnerTeamId);
+		return;
+	}
+
+	CheckMatchConditions();
+
+	if (ASoccerGameState* GameState = GetGameState<ASoccerGameState>())
+	{
+		GameState->SetMatchActive(true);
+		GameState->SetMatchElapsedTime(MatchElapsedTime);
 	}
 }
 
@@ -52,6 +79,27 @@ void ASoccerGameMode::InitializeMatch(int32 PlayerCount, float MatchDurationSeco
 	MatchElapsedTime = 0.0f;
 	bMatchActive = false;
 	bMatchPaused = false;
+
+	USoccerMatchManager* MatchManager = USoccerMatchManager::Get();
+	if (MatchManager)
+	{
+		MatchManager->Initialize(this->MatchDurationSeconds);
+		MatchManager->Reset();
+		MatchManager->Initialize(this->MatchDurationSeconds);
+	}
+
+	USoccerTeamManager* TeamManager = USoccerTeamManager::Get();
+	if (TeamManager)
+	{
+		TeamManager->RegisterTeam(FSoccerTeamRecord{1, TEXT("Team 1"), 0, 0, 0});
+		TeamManager->RegisterTeam(FSoccerTeamRecord{2, TEXT("Team 2"), 0, 0, 0});
+	}
+
+	if (ASoccerGameState* GameState = GetGameState<ASoccerGameState>())
+	{
+		GameState->SetMatchActive(false);
+		GameState->SetMatchElapsedTime(0.0f);
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerGameMode] Match initialized - %d vs %d, Duration: %.0f seconds"),
 		PlayersPerTeam, PlayersPerTeam, MatchDurationSeconds);
@@ -69,6 +117,18 @@ void ASoccerGameMode::StartMatch()
 	bMatchPaused = false;
 	MatchElapsedTime = 0.0f;
 
+	if (USoccerMatchManager* MatchManager = USoccerMatchManager::Get())
+	{
+		MatchManager->Initialize(MatchDurationSeconds);
+		MatchManager->Start();
+	}
+
+	if (ASoccerGameState* GameState = GetGameState<ASoccerGameState>())
+	{
+		GameState->SetMatchActive(true);
+		GameState->SetMatchElapsedTime(0.0f);
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerGameMode] Match started"));
 }
 
@@ -80,7 +140,19 @@ void ASoccerGameMode::EndMatch(int32 WinningTeamId)
 	}
 
 	bMatchActive = false;
+	bMatchPaused = false;
 	MatchElapsedTime = MatchDurationSeconds;
+
+	if (USoccerMatchManager* MatchManager = USoccerMatchManager::Get())
+	{
+		MatchManager->End(WinningTeamId);
+	}
+
+	if (ASoccerGameState* GameState = GetGameState<ASoccerGameState>())
+	{
+		GameState->SetMatchActive(false);
+		GameState->SetMatchElapsedTime(MatchDurationSeconds);
+	}
 
 	if (WinningTeamId == -1)
 	{
@@ -100,6 +172,10 @@ void ASoccerGameMode::PauseMatch()
 	}
 
 	bMatchPaused = true;
+	if (USoccerMatchManager* MatchManager = USoccerMatchManager::Get())
+	{
+		MatchManager->Pause();
+	}
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerGameMode] Match paused"));
 }
 
@@ -111,16 +187,20 @@ void ASoccerGameMode::ResumeMatch()
 	}
 
 	bMatchPaused = false;
+	if (USoccerMatchManager* MatchManager = USoccerMatchManager::Get())
+	{
+		MatchManager->Resume();
+	}
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerGameMode] Match resumed"));
 }
 
 void ASoccerGameMode::UpdateMatchTime(float DeltaTime)
 {
-	MatchElapsedTime += DeltaTime;
-
-	if (MatchElapsedTime >= MatchDurationSeconds)
+	if (USoccerMatchManager* MatchManager = USoccerMatchManager::Get())
 	{
-		EndMatch(-1); // Draw on time expiration
+		MatchManager->Tick(DeltaTime);
+		const FSoccerMatchSummary MatchSummary = MatchManager->GetSummary();
+		MatchElapsedTime = MatchSummary.ElapsedTime;
 	}
 }
 

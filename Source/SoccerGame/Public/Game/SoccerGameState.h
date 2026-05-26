@@ -84,6 +84,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Players")
 	int32 GetPlayerCount() const { return RegisteredPlayers.Num(); }
 
+	// Match state sync
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Match")
+	void SetMatchActive(bool bActive);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Match")
+	void SetMatchElapsedTime(float NewElapsedTime);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Match")
+	float GetMatchElapsedTime() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Match")
+	bool IsMatchActive() const;
+
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Stats")
 	FTeamStats GetTeamStats(int32 TeamId) const;

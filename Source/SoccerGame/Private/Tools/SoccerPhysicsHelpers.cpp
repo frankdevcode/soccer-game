@@ -1,6 +1,7 @@
 // Copyright Frank Dev Code. All Rights Reserved.
 
 #include "Tools/SoccerPhysicsHelpers.h"
+#include "Tools/SoccerMathHelpers.h"
 
 FVector USoccerPhysicsHelpers::ApplyDrag(const FVector& Velocity, float DragCoefficient, float DeltaTime)
 {

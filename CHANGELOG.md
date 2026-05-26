@@ -50,6 +50,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Architecture: UObject-based runtime tools
 - Integration: reusable helpers for current and future gameplay systems
 
+### Added - STEP 6
+- Basic game loop and framework integration
+- `ASoccerGameMode` now drives match lifecycle and time updates
+- `ASoccerGameState` exposes match activity and elapsed time sync for replication
+- `USoccerMatchManager` and `USoccerTeamManager` are initialized and used during gameplay flow
+- Startup team registration and lifecycle sync for future gameplay/UI systems
+
+### Technical Details - STEP 6
+- Language: C++ (UE5 standards)
+- Core systems: GameMode, GameState, MatchManager, TeamManager
+- Verification: editor diagnostics reported no errors in modified files
+
 ### Added - STEP 3
 - Unreal Engine 5 project configuration (SoccerGame.uproject)
 - C++ build system configuration (SoccerGame.Build.cs, SoccerGameEditor.Build.cs)

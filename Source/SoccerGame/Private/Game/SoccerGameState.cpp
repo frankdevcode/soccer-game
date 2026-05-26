@@ -27,11 +27,32 @@ void ASoccerGameState::BeginPlay()
 void ASoccerGameState::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
-	if (bIsMatchActive)
+void ASoccerGameState::SetMatchActive(bool bActive)
+{
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		MatchElapsedTime += DeltaTime;
+		bIsMatchActive = bActive;
 	}
+}
+
+void ASoccerGameState::SetMatchElapsedTime(float NewElapsedTime)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		MatchElapsedTime = NewElapsedTime;
+	}
+}
+
+float ASoccerGameState::GetMatchElapsedTime() const
+{
+	return MatchElapsedTime;
+}
+
+bool ASoccerGameState::IsMatchActive() const
+{
+	return bIsMatchActive;
 }
 
 void ASoccerGameState::UpdateTeamScore(int32 TeamId, int32 NewScore)
