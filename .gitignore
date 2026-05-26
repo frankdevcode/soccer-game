@@ -1,0 +1,52 @@
+# Ignore all temporary files
+Intermediate/
+Binaries/
+Saved/
+.vs/
+.vscode/
+.idea/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Logs
+Logs/
+*.log
+
+# Generated files
+DerivedDataCache/
+
+# Editor and IDE
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Node (if using any Node-based tools)
+node_modules/
+package-lock.json
+yarn.lock
+
+# OS specific
+Thumbs.db
+.DS_Store
+
+# Unreal specific
+*.uplugin~
+Content/Slate/
+
+# User specific
+*.VC.db
+*.VC.db-shm
+*.VC.db-wal
