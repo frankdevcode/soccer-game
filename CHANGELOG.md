@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] - 2026-05-26
 
+### Added - STEP 4
+- Core C++ game framework classes
+- `ASoccerGameMode` - Match initialization, start, end, pause/resume
+- `ASoccerGameState` - Network replicated game state with team stats
+- `ASoccerPlayerCharacter` - Player character with movement and stamina system
+- `ASoccerPlayerController` - Player control and input handling
+- `USoccerGameLogging` - Centralized logging with severity levels
+- `USoccerGameSettings` - Global configuration management
+- Complete C++ implementation with documentation
+- Enhanced Input System integration
+- Network replication framework setup
+- Stamina system for player fatigue management
+- Match state tracking and team statistics
+- Player registration and team management
+- Blueprint integration for all major classes
+- C++ Architecture documentation (CPP_ARCHITECTURE.md)
+
+### Technical Details - STEP 4
+- Language: C++ (UE5 standards)
+- Classes: 6 core framework classes
+- Files: 12 source files (6 headers + 6 implementations)
+- Architecture: Module-based organization
+- Network: Replication with authority model
+- Input: Enhanced Input System (UE5 best practice)
+
 ### Added - STEP 3
 - Unreal Engine 5 project configuration (SoccerGame.uproject)
 - C++ build system configuration (SoccerGame.Build.cs, SoccerGameEditor.Build.cs)
