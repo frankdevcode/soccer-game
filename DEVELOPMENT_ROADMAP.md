@@ -15,7 +15,7 @@
 - [x] **Step 2**: Setup version control and documentation
 - [x] **Step 3**: Configure build pipeline and asset management
 - [x] **Step 4**: Create core project architecture
-- [ ] **Step 5**: Implement project tools and utilities
+- [x] **Step 5**: Implement project tools and utilities
 
 ### **PHASE 2: Core Gameplay Foundation**
 - [ ] **Step 6**: Create basic game loop and framework
@@ -96,38 +96,35 @@
 
 ---
 
-## 📝 Current Step: **STEP 4 - Create Core Project Architecture** ✅ COMPLETED
+## 📝 Current Step: **STEP 5 - Implement Project Tools and Utilities** ✅ COMPLETED
 
 ### Objectives:
-1. ✅ Implement core C++ game framework classes
-2. ✅ Create game mode and game state
-3. ✅ Implement player character with movement
-4. ✅ Setup player controller with input handling
-5. ✅ Create utility systems (logging, settings)
-6. ✅ Document C++ architecture
+1. ✅ Create shared math, string, and physics helper utilities
+2. ✅ Implement runtime player manager for roster and player data
+3. ✅ Implement runtime team manager for scoreboard and team state
+4. ✅ Implement runtime match manager for lifecycle and timing
+5. ✅ Expose utility APIs in a Blueprint-friendly way
+6. ✅ Update project tracking documentation
 
 ### Deliverables:
-- C++ Base Classes:
-  - `ASoccerGameMode` - Match management
-  - `ASoccerGameState` - Network replicated state
-  - `ASoccerPlayerCharacter` - Player with movement/stamina
-  - `ASoccerPlayerController` - Input/UI control
-  - `USoccerGameLogging` - Logging system
-  - `USoccerGameSettings` - Configuration
-- 12 source files (6 headers + 6 implementations)
-- C++ Architecture documentation (CPP_ARCHITECTURE.md)
+- Utility classes:
+  - `USoccerMathHelpers` - clamp, normalization, kick velocity, time formatting
+  - `USoccerStringHelpers` - sanitize, title case, label formatting
+  - `USoccerPhysicsHelpers` - drag, velocity clamping, impact force
+- Runtime managers:
+  - `USoccerPlayerManager` - player records and roster queries
+  - `USoccerTeamManager` - team metadata and stat updates
+  - `USoccerMatchManager` - lifecycle, timing, and match summary
+- 12 new source files (6 headers + 6 implementations)
 
 ### Key Features:
-- Match lifecycle management (Initialize, Start, End, Pause)
-- Team statistics and ball possession tracking
-- Player stamina system
-- Network replication framework
-- Enhanced Input System integration
-- Backend communication stubs
-- Professional logging and configuration
+- Runtime data services for future gameplay and UI integration
+- Utility functions reusable across gameplay, physics, and UI
+- UObject-backed managers with singleton access patterns
+- Clean separation between core gameplay and supporting systems
 
 ### Next Step:
-- **STEP 5**: Implement project tools and utilities
+- **STEP 6**: Create basic game loop and framework
 
 ## 🏗️ Project Structure
 ```

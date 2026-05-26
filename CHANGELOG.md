@@ -32,6 +32,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Network: Replication with authority model
 - Input: Enhanced Input System (UE5 best practice)
 
+### Added - STEP 5
+- Shared utility helpers for math, strings, and physics
+- `USoccerMathHelpers` - clamp, magnitude, kick velocity, time formatting
+- `USoccerStringHelpers` - sanitize, title case, and label formatting
+- `USoccerPhysicsHelpers` - drag, velocity clamp, and impact force calculations
+- Runtime managers for gameplay support
+- `USoccerPlayerManager` - player record registration, updates, and queries
+- `USoccerTeamManager` - team metadata and stat updates
+- `USoccerMatchManager` - match lifecycle, timing, and summary state
+- Blueprint-friendly utility APIs and singleton runtime services
+
+### Technical Details - STEP 5
+- Language: C++ (UE5 standards)
+- Classes: 6 utility/runtime classes
+- Files: 12 source files (6 headers + 6 implementations)
+- Architecture: UObject-based runtime tools
+- Integration: reusable helpers for current and future gameplay systems
+
 ### Added - STEP 3
 - Unreal Engine 5 project configuration (SoccerGame.uproject)
 - C++ build system configuration (SoccerGame.Build.cs, SoccerGameEditor.Build.cs)
