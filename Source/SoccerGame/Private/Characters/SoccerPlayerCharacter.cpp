@@ -17,12 +17,15 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	, PlayerNumber(1)
 	, MaxWalkSpeed(600.0f)
 	, SprintSpeedMultiplier(1.5f)
+	, Acceleration(1200.0f)
+	, Deceleration(1600.0f)
 	, bIsSprinting(false)
 	, MaxStamina(100.0f)
 	, CurrentStamina(100.0f)
 	, StaminaRegenerationRate(20.0f)
 	, SprintStaminaCost(30.0f)
 	, DesiredRotationSpeed(500.0f)
+	, MovementInput(FVector2D::ZeroVector)
 {
 	// Don't rotate with camera
 	bUseControllerRotationPitch = false;
@@ -35,6 +38,8 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.0f;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = 300.0f;
+	GetCharacterMovement()->MaxAcceleration = Acceleration;
+	GetCharacterMovement()->BrakingDecelerationWalking = Deceleration;
 
 	// Don't rotate character with camera
 	bUseControllerRotationPitch = false;
@@ -91,8 +96,7 @@ void ASoccerPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASoccerPlayerCharacter::MoveForward);
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASoccerPlayerCharacter::MoveRight);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASoccerPlayerCharacter::Move);
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASoccerPlayerCharacter::Look);
@@ -122,11 +126,35 @@ void ASoccerPlayerCharacter::InitializePlayer(int32 InTeamId, EPlayerPosition In
 		TeamId, PlayerNumber, static_cast<int32>(PlayerPosition));
 }
 
+void ASoccerPlayerCharacter::Move(const FInputActionValue& Value)
+{
+	if (Controller == nullptr)
+	{
+		return;
+	}
+
+	MovementInput = Value.Get<FVector2D>();
+
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	const FVector Forward = FRotMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector Right = FRotMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	const FVector DesiredMovement = (Forward * MovementInput.Y) + (Right * MovementInput.X);
+
+	if (!DesiredMovement.IsNearlyZero())
+	{
+		AddMovementInput(DesiredMovement.GetSafeNormal(), 1.0f);
+		LastMovementInput = DesiredMovement;
+		return;
+	}
+
+	LastMovementInput = FVector::ZeroVector;
+}
+
 void ASoccerPlayerCharacter::MoveForward(float Value)
 {
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
-		// Find forward direction
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
@@ -141,7 +169,6 @@ void ASoccerPlayerCharacter::MoveRight(float Value)
 {
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
-		// Find right direction
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 

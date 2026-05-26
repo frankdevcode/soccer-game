@@ -52,6 +52,9 @@ public:
 
 	// Movement
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Movement")
+	void Move(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Movement")
 	void MoveForward(float Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Movement")
@@ -114,6 +117,12 @@ protected:
 	float SprintSpeedMultiplier;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Movement")
+	float Acceleration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Movement")
+	float Deceleration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Movement")
 	bool bIsSprinting;
 
 	// Stamina system
@@ -165,5 +174,6 @@ private:
 	void UpdateAnimations();
 
 	FVector LastMovementInput;
+	FVector2D MovementInput;
 	float DesiredRotationSpeed;
 };

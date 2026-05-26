@@ -141,7 +141,17 @@ See above sections for full changelog of STEP 1 and STEP 2
 ## Version History
 
 ### [Unreleased]
-- Feature development in progress
+
+### Added - STEP 7
+- Vector-based movement input processing in `ASoccerPlayerCharacter`
+- Tunable movement acceleration and deceleration settings
+- Stable movement intent tracking for future animation and ball interaction layers
+- Sprinting remains tied to stamina consumption and recovery
+
+### Technical Details - STEP 7
+- Language: C++ (UE5 standards)
+- Core systems: PlayerCharacter movement handling
+- Verification: editor diagnostics reported no errors in modified C++ files
 
 ---
 
