@@ -165,6 +165,17 @@ See above sections for full changelog of STEP 1 and STEP 2
 - Core systems: Ball actor and physics component
 - Verification: editor diagnostics reported no errors in modified C++ files
 
+### Added - STEP 9
+- `ASoccerPitch` actor with basic field plane and boundary wall structure
+- Global pitch dimensions and boundary settings in `USoccerGameSettings`
+- Configurable futsal court layout for future level and gameplay design
+- Boundary objects ready for collision-based court containment
+
+### Technical Details - STEP 9
+- Language: C++ (UE5 standards)
+- Core systems: Pitch actor and game settings integration
+- Verification: editor diagnostics reported no errors in modified C++ files
+
 ---
 
 **Note**: Version numbering follows Semantic Versioning (MAJOR.MINOR.PATCH)

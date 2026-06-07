@@ -142,7 +142,13 @@
 # Verification:
 #   - Editor diagnostics: no errors found in modified C++ files
 
-# STEP 9: Create basic pitch/court structure ⏳ PENDING
+# STEP 9: Create basic pitch/court structure ✅ COMPLETED
+# ✅ Basic pitch actor with field plane and boundary walls added
+# ✅ Global field dimensions and boundary settings exposed in SoccerGameSettings
+# ✅ Gameplay layout now supports configurable futsal field dimensions
+# Verification:
+#   - Editor diagnostics: no errors found in modified C++ files
+
 # STEP 10: Implement camera system ⏳ PENDING
 
 # ============================================================================

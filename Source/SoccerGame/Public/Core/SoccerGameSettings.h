@@ -34,6 +34,24 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Gameplay")
 	float BallMass;
 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Gameplay")
+	float FieldLength;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Gameplay")
+	float FieldWidth;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Gameplay")
+	float GoalWidth;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Gameplay")
+	float GoalDepth;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Gameplay")
+	float BoundaryHeight;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Gameplay")
+	float BoundaryThickness;
+
 	// Physics settings
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
 	float MaxBallSpeed;

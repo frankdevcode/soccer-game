@@ -9,6 +9,12 @@ USoccerGameSettings::USoccerGameSettings()
 	, PlayersPerTeam(5)
 	, BallRadius(11.0f) // cm
 	, BallMass(0.43f) // kg
+	, FieldLength(4000.0f) // 40m
+	, FieldWidth(2000.0f) // 20m
+	, GoalWidth(700.0f)
+	, GoalDepth(200.0f)
+	, BoundaryHeight(120.0f)
+	, BoundaryThickness(30.0f)
 	, MaxBallSpeed(5000.0f) // cm/s
 	, AirResistance(0.1f)
 	, KickPower(1000.0f)
@@ -54,6 +60,12 @@ void USoccerGameSettings::SetDefaults()
 	PlayersPerTeam = 5;
 	BallRadius = 11.0f;
 	BallMass = 0.43f;
+	FieldLength = 4000.0f;
+	FieldWidth = 2000.0f;
+	GoalWidth = 700.0f;
+	GoalDepth = 200.0f;
+	BoundaryHeight = 120.0f;
+	BoundaryThickness = 30.0f;
 	MaxBallSpeed = 5000.0f;
 	AirResistance = 0.1f;
 	KickPower = 1000.0f;

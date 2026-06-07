@@ -21,7 +21,7 @@
 - [x] **Step 6**: Create basic game loop and framework
 - [x] **Step 7**: Implement player movement system
 - [x] **Step 8**: Develop ball physics engine
-- [ ] **Step 9**: Create basic pitch/court structure
+- [x] **Step 9**: Create basic pitch/court structure
 - [ ] **Step 10**: Implement camera system
 
 ### **PHASE 3: Character & Animation System**
@@ -96,26 +96,25 @@
 
 ---
 
-## 📝 Current Step: **STEP 8 - Develop Ball Physics Engine** ✅ COMPLETED
+## 📝 Current Step: **STEP 9 - Create Basic Pitch/Court Structure** ✅ COMPLETED
 
 ### Objectives:
-1. ✅ Create a ball actor with physics simulation
-2. ✅ Add a dedicated ball physics component for drag, velocity, and impact response
-3. ✅ Implement kicks, passes, and headers with impulse-based behavior
-4. ✅ Connect player interaction to nearest ball detection
+1. ✅ Create a pitch actor with field geometry and boundaries
+2. ✅ Expose core field dimensions in `SoccerGameSettings`
+3. ✅ Build basic boundary walls for court structure
+4. ✅ Keep the pitch ready for gameplay and ball interaction
 5. ✅ Verify the modified C++ files are error-free in editor diagnostics
 
 ### Deliverables:
-- `ASoccerBall` actor with collision and mesh components
-- `UBallPhysicsComponent` with drag, speed clamping, and impulse application
-- Ball interaction methods for kicks, passes, and headers
-- Nearest ball detection in `ASoccerPlayerCharacter`
+- `ASoccerPitch` actor with field plane and boundary walls
+- Field dimension config in `SoccerGameSettings`
+- Basic futsal court geometry ready for scene placement
 - Updated documentation and requirements tracking
 
 ### Key Features:
-- Ball movement simulated continuously via `Tick`
-- Ball response to impacts with velocity reflection
-- Player ball control ready for gameplay integration
+- Configurable pitch dimensions through game settings
+- Robust boundary collision for future gameplay logic
+- Simple court structure suitable for level design
 - Clean editor diagnostics on the modified C++ files
 
 ### Next Step:
