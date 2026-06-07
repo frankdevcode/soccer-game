@@ -189,6 +189,9 @@ protected:
 	float LastGoalkeeperDiveTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Goalkeeper")
+	float GoalkeeperSaveAnimationDuration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Goalkeeper")
 	UInputAction* SaveAction;
 
 	// Stamina system

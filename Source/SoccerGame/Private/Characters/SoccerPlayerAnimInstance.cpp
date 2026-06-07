@@ -3,12 +3,15 @@
 #include "Characters/SoccerPlayerAnimInstance.h"
 
 USoccerPlayerAnimInstance::USoccerPlayerAnimInstance()
-	: Speed(0.0f)
+	: AnimationState(EPlayerAnimationState::Idle)
+	, Speed(0.0f)
 	, Direction(0.0f)
 	, bIsMoving(false)
 	, bIsSprinting(false)
 	, bIsInAir(false)
 	, bIsJumping(false)
+	, bIsGoalkeeper(false)
+	, bIsPerformingSave(false)
 {
 }
 
@@ -16,15 +19,18 @@ void USoccerPlayerAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
+	AnimationState = EPlayerAnimationState::Idle;
 	Speed = 0.0f;
 	Direction = 0.0f;
 	bIsMoving = false;
 	bIsSprinting = false;
 	bIsInAir = false;
 	bIsJumping = false;
+	bIsGoalkeeper = false;
+	bIsPerformingSave = false;
 }
 
-void USoccerPlayerAnimInstance::UpdateState(float InSpeed, float InDirection, bool bMoving, bool bSprinting, bool bInAir)
+void USoccerPlayerAnimInstance::UpdateState(float InSpeed, float InDirection, bool bMoving, bool bSprinting, bool bInAir, bool bIsGoalkeeperParam, bool bIsPerformingSaveParam)
 {
 	Speed = InSpeed;
 	Direction = InDirection;
@@ -32,4 +38,27 @@ void USoccerPlayerAnimInstance::UpdateState(float InSpeed, float InDirection, bo
 	bIsSprinting = bSprinting;
 	bIsInAir = bInAir;
 	bIsJumping = bInAir;
+	bIsGoalkeeper = bIsGoalkeeperParam;
+	bIsPerformingSave = bIsPerformingSaveParam;
+
+	if (bIsPerformingSave)
+	{
+		AnimationState = EPlayerAnimationState::Save;
+	}
+	else if (bIsInAir)
+	{
+		AnimationState = EPlayerAnimationState::Jump;
+	}
+	else if (bIsSprinting)
+	{
+		AnimationState = EPlayerAnimationState::Sprint;
+	}
+	else if (bIsMoving)
+	{
+		AnimationState = Speed > 300.0f ? EPlayerAnimationState::Run : EPlayerAnimationState::Walk;
+	}
+	else
+	{
+		AnimationState = EPlayerAnimationState::Idle;
+	}
 }

@@ -6,6 +6,18 @@
 #include "Animation/AnimInstance.h"
 #include "SoccerPlayerAnimInstance.generated.h"
 
+UENUM(BlueprintType)
+enum class EPlayerAnimationState : uint8
+{
+	Idle UMETA(DisplayName = "Idle"),
+	Walk UMETA(DisplayName = "Walk"),
+	Run UMETA(DisplayName = "Run"),
+	Sprint UMETA(DisplayName = "Sprint"),
+	Jump UMETA(DisplayName = "Jump"),
+	Save UMETA(DisplayName = "Save"),
+	Fall UMETA(DisplayName = "Fall")
+};
+
 /**
  * @class USoccerPlayerAnimInstance
  * @brief Animation instance for soccer player state-driven animations.
@@ -21,7 +33,10 @@ public:
 	virtual void NativeInitializeAnimation() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Animation")
-	void UpdateState(float InSpeed, float InDirection, bool bMoving, bool bSprinting, bool bInAir);
+	void UpdateState(float InSpeed, float InDirection, bool bMoving, bool bSprinting, bool bInAir, bool bIsGoalkeeper, bool bIsPerformingSave);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
+	EPlayerAnimationState AnimationState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
 	float Speed;
@@ -40,4 +55,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
 	bool bIsJumping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
+	bool bIsGoalkeeper;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
+	bool bIsPerformingSave;
 };

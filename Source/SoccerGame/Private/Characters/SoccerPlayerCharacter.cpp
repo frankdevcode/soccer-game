@@ -35,6 +35,7 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	, GoalkeeperPushbackStrength(850.0f)
 	, bGoalkeeperCanDive(true)
 	, LastGoalkeeperDiveTime(-1000.0f)
+	, GoalkeeperSaveAnimationDuration(0.75f)
 	, CharacterRigDefinition(nullptr)
 	, DefaultSkeletalMesh(nullptr)
 	, DefaultAnimInstanceClass(nullptr)
@@ -592,7 +593,9 @@ void ASoccerPlayerCharacter::UpdateAnimations()
 		const bool bMoving = Speed > KINDA_SMALL_NUMBER;
 		const FVector LocalVelocity = GetActorRotation().UnrotateVector(Velocity);
 		const float Direction = LocalVelocity.IsNearlyZero() ? 0.0f : FMath::RadiansToDegrees(FMath::Atan2(LocalVelocity.Y, LocalVelocity.X));
+		const float CurrentTime = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
+		const bool bIsPerformingSave = PlayerPosition == EPlayerPosition::Goalkeeper && (CurrentTime - LastGoalkeeperDiveTime) < GoalkeeperSaveAnimationDuration;
 
-		AnimInstance->UpdateState(Speed, Direction, bMoving, bIsSprinting, bInAir);
+		AnimInstance->UpdateState(Speed, Direction, bMoving, bIsSprinting, bInAir, PlayerPosition == EPlayerPosition::Goalkeeper, bIsPerformingSave);
 	}
 }
