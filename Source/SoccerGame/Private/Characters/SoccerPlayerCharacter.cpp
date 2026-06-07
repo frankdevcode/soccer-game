@@ -12,6 +12,9 @@
 #include "InputActionValue.h"
 #include "Kismet/GameplayStatics.h"
 #include "Ball/SoccerBall.h"
+#include "Characters/SoccerCharacterRig.h"
+#include "Animation/AnimInstance.h"
+#include "Components/CapsuleComponent.h"
 #include "Core/SoccerGameSettings.h"
 
 ASoccerPlayerCharacter::ASoccerPlayerCharacter()
@@ -24,6 +27,11 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	, Deceleration(1600.0f)
 	, bIsSprinting(false)
 	, BallInteractionRange(300.0f)
+	, CharacterRigDefinition(nullptr)
+	, DefaultSkeletalMesh(nullptr)
+	, DefaultAnimInstanceClass(nullptr)
+	, CharacterHeight(1.0f)
+	, CharacterWeight(1.0f)
 	, CameraFollowDistance(400.0f)
 	, MinCameraDistance(250.0f)
 	, MaxCameraDistance(800.0f)
@@ -120,6 +128,7 @@ void ASoccerPlayerCharacter::BeginPlay()
 		}
 	}
 
+	SetupCharacterAppearance();
 	CurrentStamina = MaxStamina;
 
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Player initialized - Team %d, Position: %d"),
@@ -368,6 +377,63 @@ ASoccerBall* ASoccerPlayerCharacter::FindNearestBall(float MaxDistance) const
 	}
 
 	return ClosestBall;
+}
+
+void ASoccerPlayerCharacter::ConfigurePlayerModel(USkeletalMesh* Mesh, TSubclassOf<UAnimInstance> AnimBP)
+{
+	if (Mesh)
+	{
+		DefaultSkeletalMesh = Mesh;
+	}
+
+	if (AnimBP)
+	{
+		DefaultAnimInstanceClass = AnimBP;
+	}
+
+	ApplyCharacterRig();
+}
+
+void ASoccerPlayerCharacter::ApplyCharacterRig()
+{
+	if (CharacterRigDefinition)
+	{
+		CharacterRigDefinition->ApplyToCharacter(this);
+		return;
+	}
+
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	if (!MeshComponent)
+	{
+		return;
+	}
+
+	if (DefaultSkeletalMesh)
+	{
+		MeshComponent->SetSkeletalMesh(DefaultSkeletalMesh);
+	}
+
+	if (DefaultAnimInstanceClass)
+	{
+		MeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+		MeshComponent->SetAnimInstanceClass(DefaultAnimInstanceClass);
+	}
+
+	MeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	MeshComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+	MeshComponent->SetRelativeScale3D(FVector(CharacterHeight, CharacterWeight, CharacterHeight));
+}
+
+void ASoccerPlayerCharacter::SetupCharacterAppearance()
+{
+	if (CameraBoom)
+	{
+		CameraBoom->TargetArmLength = CameraFollowDistance;
+		CameraBoom->CameraLagSpeed = CameraLagSpeed;
+		CameraBoom->CameraRotationLagSpeed = CameraRotationLagSpeed;
+	}
+
+	ApplyCharacterRig();
 }
 
 void ASoccerPlayerCharacter::UpdateStamina(float DeltaTime)

@@ -6,7 +6,7 @@
 # Last Updated: 2026-05-26
 # ============================================================================
 
-# PROYECTO: Videojuego Profesional de Fútbol Sala 3D
+# PROYECTO: Videojuego Profesional de Fútbol Sala 3D - Debe permitir ejecutarse en el navegador
 
 # ============================================================================
 # PHASE 1: PROJECT FOUNDATION & SETUP

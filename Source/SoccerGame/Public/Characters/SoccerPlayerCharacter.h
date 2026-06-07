@@ -13,6 +13,7 @@ class UInputMappingContext;
 class UInputAction;
 class UCharacterMovementComponent;
 class UAnimInstance;
+class USkeletalMesh;
 class ASoccerBall;
 
 /**
@@ -50,6 +51,28 @@ public:
 	// Player initialization
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Player")
 	void InitializePlayer(int32 InTeamId, EPlayerPosition InPosition, int32 InPlayerNumber);
+
+	// Character appearance and rigging
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Character")
+	void ConfigurePlayerModel(USkeletalMesh* Mesh, TSubclassOf<UAnimInstance> AnimBP);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Character")
+	void ApplyCharacterRig();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Character")
+	USoccerCharacterRig* CharacterRigDefinition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Character")
+	USkeletalMesh* DefaultSkeletalMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Character")
+	TSubclassOf<UAnimInstance> DefaultAnimInstanceClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Character")
+	float CharacterHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Character")
+	float CharacterWeight;
 
 	// Movement
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Movement")
@@ -204,6 +227,9 @@ private:
 	void UpdateStamina(float DeltaTime);
 	void RegenerateStamina(float DeltaTime);
 	void ConsumeSprint(float DeltaTime);
+
+	// Character setup
+	void SetupCharacterAppearance();
 
 	// Ball interaction helpers
 	ASoccerBall* FindNearestBall(float MaxDistance) const;
