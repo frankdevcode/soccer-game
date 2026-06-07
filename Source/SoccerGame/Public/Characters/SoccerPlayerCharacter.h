@@ -65,6 +65,9 @@ public:
 	void Look(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Movement")
+	void ZoomCamera(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Movement")
 	void Sprint();
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Movement")
@@ -150,6 +153,30 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Camera")
 	class UCameraComponent* FollowCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraFollowDistance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float MinCameraDistance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float MaxCameraDistance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraZoomStep;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraPitchMin;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraPitchMax;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraLagSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraRotationLagSpeed;
+
 	// Enhanced Input System
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Input")
 	class UInputMappingContext* DefaultMappingContext;
@@ -165,6 +192,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Input")
 	class UInputAction* KickAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Input")
+	class UInputAction* ZoomAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Input")
 	class UInputAction* JumpAction;

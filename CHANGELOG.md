@@ -176,6 +176,18 @@ See above sections for full changelog of STEP 1 and STEP 2
 - Core systems: Pitch actor and game settings integration
 - Verification: editor diagnostics reported no errors in modified C++ files
 
+### Added - STEP 10
+- Camera system enhancements for player-controlled view
+- Spring arm lag, rotation damping, and collision enabled
+- Zoom input support for camera distance control
+- Camera pitch clamping for predictable viewer angles
+- Camera settings exposed through `USoccerGameSettings`
+
+### Technical Details - STEP 10
+- Language: C++ (UE5 standards)
+- Core systems: Camera behavior and player view management
+- Verification: editor diagnostics reported no errors in modified C++ files
+
 ---
 
 **Note**: Version numbering follows Semantic Versioning (MAJOR.MINOR.PATCH)

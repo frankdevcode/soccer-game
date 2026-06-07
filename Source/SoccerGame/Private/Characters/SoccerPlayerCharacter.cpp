@@ -12,6 +12,7 @@
 #include "InputActionValue.h"
 #include "Kismet/GameplayStatics.h"
 #include "Ball/SoccerBall.h"
+#include "Core/SoccerGameSettings.h"
 
 ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	: TeamId(1)
@@ -23,6 +24,14 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	, Deceleration(1600.0f)
 	, bIsSprinting(false)
 	, BallInteractionRange(300.0f)
+	, CameraFollowDistance(400.0f)
+	, MinCameraDistance(250.0f)
+	, MaxCameraDistance(800.0f)
+	, CameraZoomStep(50.0f)
+	, CameraPitchMin(-60.0f)
+	, CameraPitchMax(20.0f)
+	, CameraLagSpeed(12.0f)
+	, CameraRotationLagSpeed(12.0f)
 	, MaxStamina(100.0f)
 	, CurrentStamina(100.0f)
 	, StaminaRegenerationRate(20.0f)
@@ -44,7 +53,22 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	GetCharacterMovement()->MaxAcceleration = Acceleration;
 	GetCharacterMovement()->BrakingDecelerationWalking = Deceleration;
 
-	// Don't rotate character with camera
+	// Camera system
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = CameraFollowDistance;
+	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->CameraLagSpeed = CameraLagSpeed;
+	CameraBoom->bEnableCameraRotationLag = true;
+	CameraBoom->CameraRotationLagSpeed = CameraRotationLagSpeed;
+	CameraBoom->ProbeSize = 12.0f;
+	CameraBoom->bDoCollisionTest = true;
+
+	// Create follow camera
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -77,6 +101,25 @@ void ASoccerPlayerCharacter::BeginPlay()
 		}
 	}
 
+	if (USoccerGameSettings* Settings = USoccerGameSettings::Get())
+	{
+		CameraFollowDistance = Settings->CameraFollowDistance;
+		MinCameraDistance = Settings->CameraMinDistance;
+		MaxCameraDistance = Settings->CameraMaxDistance;
+		CameraZoomStep = Settings->CameraZoomStep;
+		CameraPitchMin = Settings->CameraPitchMin;
+		CameraPitchMax = Settings->CameraPitchMax;
+		CameraLagSpeed = Settings->CameraLagSpeed;
+		CameraRotationLagSpeed = Settings->CameraRotationLagSpeed;
+
+		if (CameraBoom)
+		{
+			CameraBoom->TargetArmLength = CameraFollowDistance;
+			CameraBoom->CameraLagSpeed = CameraLagSpeed;
+			CameraBoom->CameraRotationLagSpeed = CameraRotationLagSpeed;
+		}
+	}
+
 	CurrentStamina = MaxStamina;
 
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Player initialized - Team %d, Position: %d"),
@@ -103,6 +146,12 @@ void ASoccerPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASoccerPlayerCharacter::Look);
+
+		// Zoom
+		if (ZoomAction)
+		{
+			EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &ASoccerPlayerCharacter::ZoomCamera);
+		}
 
 		// Sprinting
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ASoccerPlayerCharacter::Sprint);
@@ -195,8 +244,28 @@ void ASoccerPlayerCharacter::Look(const FInputActionValue& Value)
 		if (LookAxisVector.Y != 0.0f)
 		{
 			AddControllerPitchInput(LookAxisVector.Y);
+			FRotator ControlRotation = Controller->GetControlRotation();
+			ControlRotation.Pitch = FMath::Clamp(ControlRotation.Pitch, CameraPitchMin, CameraPitchMax);
+			Controller->SetControlRotation(ControlRotation);
 		}
 	}
+}
+
+void ASoccerPlayerCharacter::ZoomCamera(const FInputActionValue& Value)
+{
+	if (!CameraBoom)
+	{
+		return;
+	}
+
+	const float ZoomValue = Value.Get<float>();
+	if (FMath::IsNearlyZero(ZoomValue))
+	{
+		return;
+	}
+
+	const float NewArmLength = FMath::Clamp(CameraBoom->TargetArmLength + ZoomValue * CameraZoomStep, MinCameraDistance, MaxCameraDistance);
+	CameraBoom->TargetArmLength = NewArmLength;
 }
 
 void ASoccerPlayerCharacter::Sprint()

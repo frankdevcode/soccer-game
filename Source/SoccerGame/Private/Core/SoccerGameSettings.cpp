@@ -15,6 +15,14 @@ USoccerGameSettings::USoccerGameSettings()
 	, GoalDepth(200.0f)
 	, BoundaryHeight(120.0f)
 	, BoundaryThickness(30.0f)
+	, CameraFollowDistance(400.0f)
+	, CameraMinDistance(250.0f)
+	, CameraMaxDistance(800.0f)
+	, CameraZoomStep(50.0f)
+	, CameraPitchMin(-60.0f)
+	, CameraPitchMax(20.0f)
+	, CameraLagSpeed(12.0f)
+	, CameraRotationLagSpeed(12.0f)
 	, MaxBallSpeed(5000.0f) // cm/s
 	, AirResistance(0.1f)
 	, KickPower(1000.0f)
@@ -66,6 +74,14 @@ void USoccerGameSettings::SetDefaults()
 	GoalDepth = 200.0f;
 	BoundaryHeight = 120.0f;
 	BoundaryThickness = 30.0f;
+	CameraFollowDistance = 400.0f;
+	CameraMinDistance = 250.0f;
+	CameraMaxDistance = 800.0f;
+	CameraZoomStep = 50.0f;
+	CameraPitchMin = -60.0f;
+	CameraPitchMax = 20.0f;
+	CameraLagSpeed = 12.0f;
+	CameraRotationLagSpeed = 12.0f;
 	MaxBallSpeed = 5000.0f;
 	AirResistance = 0.1f;
 	KickPower = 1000.0f;

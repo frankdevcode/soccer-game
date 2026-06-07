@@ -52,6 +52,30 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Gameplay")
 	float BoundaryThickness;
 
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraFollowDistance;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraMinDistance;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraMaxDistance;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraZoomStep;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraPitchMin;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraPitchMax;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraLagSpeed;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
+	float CameraRotationLagSpeed;
+
 	// Physics settings
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
 	float MaxBallSpeed;
