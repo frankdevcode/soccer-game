@@ -109,6 +109,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
 	void JumpForBall();
 
+	// Goalkeeper mechanics
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Goalkeeper")
+	void DiveForSave();
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Goalkeeper")
+	void AttemptGoalkeeperSave();
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Goalkeeper")
+	bool IsInGoalkeeperZone() const;
+
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Player")
 	int32 GetTeamId() const { return TeamId; }
@@ -155,6 +165,31 @@ protected:
 	// Ball interaction
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
 	float BallInteractionRange;
+
+	// Goalkeeper settings
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Goalkeeper")
+	float GoalkeeperSaveRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Goalkeeper")
+	float GoalkeeperDiveForce;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Goalkeeper")
+	float GoalkeeperDiveCooldown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Goalkeeper")
+	float GoalkeeperDiveStaminaCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Goalkeeper")
+	float GoalkeeperPushbackStrength;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Goalkeeper")
+	bool bGoalkeeperCanDive;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Goalkeeper")
+	float LastGoalkeeperDiveTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Goalkeeper")
+	UInputAction* SaveAction;
 
 	// Stamina system
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Stamina")
@@ -230,6 +265,9 @@ private:
 
 	// Character setup
 	void SetupCharacterAppearance();
+
+	// Goalkeeper state update
+	void UpdateGoalkeeperState(float DeltaTime);
 
 	// Ball interaction helpers
 	ASoccerBall* FindNearestBall(float MaxDistance) const;

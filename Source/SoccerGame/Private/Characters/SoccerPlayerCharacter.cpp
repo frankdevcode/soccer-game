@@ -28,6 +28,13 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	, Deceleration(1600.0f)
 	, bIsSprinting(false)
 	, BallInteractionRange(300.0f)
+	, GoalkeeperSaveRange(1200.0f)
+	, GoalkeeperDiveForce(650.0f)
+	, GoalkeeperDiveCooldown(1.8f)
+	, GoalkeeperDiveStaminaCost(15.0f)
+	, GoalkeeperPushbackStrength(850.0f)
+	, bGoalkeeperCanDive(true)
+	, LastGoalkeeperDiveTime(-1000.0f)
 	, CharacterRigDefinition(nullptr)
 	, DefaultSkeletalMesh(nullptr)
 	, DefaultAnimInstanceClass(nullptr)
@@ -141,6 +148,7 @@ void ASoccerPlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateStamina(DeltaTime);
+	UpdateGoalkeeperState(DeltaTime);
 	UpdateAnimations();
 }
 
@@ -167,11 +175,17 @@ void ASoccerPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ASoccerPlayerCharacter::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ASoccerPlayerCharacter::StopSprinting);
 
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		// Jumping / goalkeeper save
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ASoccerPlayerCharacter::JumpForBall);
 
 		// Kicking
 		EnhancedInputComponent->BindAction(KickAction, ETriggerEvent::Triggered, this, &ASoccerPlayerCharacter::KickBall);
+
+		// Goalkeeper save / dive
+		if (SaveAction)
+		{
+			EnhancedInputComponent->BindAction(SaveAction, ETriggerEvent::Started, this, &ASoccerPlayerCharacter::DiveForSave);
+		}
 	}
 }
 
@@ -340,6 +354,12 @@ void ASoccerPlayerCharacter::HeadBall()
 
 void ASoccerPlayerCharacter::JumpForBall()
 {
+	if (PlayerPosition == EPlayerPosition::Goalkeeper)
+	{
+		DiveForSave();
+		return;
+	}
+
 	if (CurrentStamina >= 10.0f)
 	{
 		CurrentStamina -= 10.0f;
@@ -435,6 +455,96 @@ void ASoccerPlayerCharacter::SetupCharacterAppearance()
 	}
 
 	ApplyCharacterRig();
+}
+
+void ASoccerPlayerCharacter::UpdateGoalkeeperState(float DeltaTime)
+{
+	if (PlayerPosition != EPlayerPosition::Goalkeeper)
+	{
+		return;
+	}
+
+	const float CurrentTime = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
+	bGoalkeeperCanDive = CurrentTime >= LastGoalkeeperDiveTime + GoalkeeperDiveCooldown;
+
+	if (CurrentStamina < GoalkeeperDiveStaminaCost)
+	{
+		bGoalkeeperCanDive = false;
+	}
+}
+
+void ASoccerPlayerCharacter::DiveForSave()
+{
+	if (PlayerPosition != EPlayerPosition::Goalkeeper || !bGoalkeeperCanDive)
+	{
+		return;
+	}
+
+	ASoccerBall* Ball = FindNearestBall(GoalkeeperSaveRange);
+	if (!Ball)
+	{
+		return;
+	}
+
+	const FVector BallDirection = (Ball->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	LaunchCharacter(FVector(BallDirection.X * GoalkeeperPushbackStrength, BallDirection.Y * GoalkeeperPushbackStrength, GoalkeeperDiveForce), true, true);
+
+	CurrentStamina = FMath::Max(0.0f, CurrentStamina - GoalkeeperDiveStaminaCost);
+	LastGoalkeeperDiveTime = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
+	bGoalkeeperCanDive = false;
+
+	AttemptGoalkeeperSave();
+
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Goalkeeper dive for save"));
+}
+
+void ASoccerPlayerCharacter::AttemptGoalkeeperSave()
+{
+	if (PlayerPosition != EPlayerPosition::Goalkeeper)
+	{
+		return;
+	}
+
+	ASoccerBall* Ball = FindNearestBall(GoalkeeperSaveRange);
+	if (!Ball)
+	{
+		return;
+	}
+
+	const FVector ToBall = Ball->GetActorLocation() - GetActorLocation();
+	const float Distance = ToBall.Size();
+	if (Distance > GoalkeeperSaveRange)
+	{
+		return;
+	}
+
+	const FVector SaveDirection = ToBall.GetSafeNormal();
+	Ball->ApplyKick(SaveDirection * -1.0f, 0.85f);
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Goalkeeper attempted save"));
+}
+
+bool ASoccerPlayerCharacter::IsInGoalkeeperZone() const
+{
+	if (PlayerPosition != EPlayerPosition::Goalkeeper)
+	{
+		return false;
+	}
+
+	if (USoccerGameSettings* Settings = USoccerGameSettings::Get())
+	{
+		const float FieldHalfLength = Settings->FieldLength * 0.5f;
+		const float HalfGoalWidth = Settings->GoalWidth * 0.5f;
+		const float GoalDepth = Settings->GoalDepth;
+		const FVector Location = GetActorLocation();
+
+		if (TeamId == 1)
+		{
+			return Location.Y <= -FieldHalfLength + GoalDepth && FMath::Abs(Location.X) <= HalfGoalWidth;
+		}
+		return Location.Y >= FieldHalfLength - GoalDepth && FMath::Abs(Location.X) <= HalfGoalWidth;
+	}
+
+	return false;
 }
 
 void ASoccerPlayerCharacter::UpdateStamina(float DeltaTime)
