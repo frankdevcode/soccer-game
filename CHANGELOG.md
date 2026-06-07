@@ -153,6 +153,18 @@ See above sections for full changelog of STEP 1 and STEP 2
 - Core systems: PlayerCharacter movement handling
 - Verification: editor diagnostics reported no errors in modified C++ files
 
+### Added - STEP 8
+- Ball physics engine with `ASoccerBall` and `UBallPhysicsComponent`
+- Drag and speed clamping on the ball simulated each tick
+- Kicks, passes, and headers resolved as physics impulses
+- Nearest-ball detection integrated into `ASoccerPlayerCharacter`
+- Collision impact response with velocity reflection
+
+### Technical Details - STEP 8
+- Language: C++ (UE5 standards)
+- Core systems: Ball actor and physics component
+- Verification: editor diagnostics reported no errors in modified C++ files
+
 ---
 
 **Note**: Version numbering follows Semantic Versioning (MAJOR.MINOR.PATCH)

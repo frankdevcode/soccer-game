@@ -13,6 +13,7 @@ class UInputMappingContext;
 class UInputAction;
 class UCharacterMovementComponent;
 class UAnimInstance;
+class ASoccerBall;
 
 /**
  * @enum EPlayerPosition
@@ -125,6 +126,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Movement")
 	bool bIsSprinting;
 
+	// Ball interaction
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float BallInteractionRange;
+
 	// Stamina system
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Stamina")
 	float MaxStamina;
@@ -169,6 +174,9 @@ private:
 	void UpdateStamina(float DeltaTime);
 	void RegenerateStamina(float DeltaTime);
 	void ConsumeSprint(float DeltaTime);
+
+	// Ball interaction helpers
+	ASoccerBall* FindNearestBall(float MaxDistance) const;
 
 	// Animation
 	void UpdateAnimations();

@@ -135,7 +135,13 @@
 # Verification:
 #   - Editor diagnostics: no errors found in modified C++ files
 
-# STEP 8: Develop ball physics engine ⏳ PENDING
+# STEP 8: Develop ball physics engine ✅ COMPLETED
+# ✅ Ball actor and physics component added for ball simulation
+# ✅ Drag, speed clamping, impacts, kicks, passes, and headers implemented
+# ✅ Player character ball interaction now resolves nearest ball and applies physics impulses
+# Verification:
+#   - Editor diagnostics: no errors found in modified C++ files
+
 # STEP 9: Create basic pitch/court structure ⏳ PENDING
 # STEP 10: Implement camera system ⏳ PENDING
 

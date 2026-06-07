@@ -1,0 +1,113 @@
+// Copyright Frank Dev Code. All Rights Reserved.
+
+#include "Ball/SoccerBall.h"
+#include "Ball/BallPhysicsComponent.h"
+#include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Core/SoccerGameSettings.h"
+#include "Tools/SoccerPhysicsHelpers.h"
+
+ASoccerBall::ASoccerBall()
+	: KickForceMultiplier(1.0f)
+	, PassForceMultiplier(0.75f)
+	, HeaderForceMultiplier(0.85f)
+{
+	PrimaryActorTick.bCanEverTick = true;
+
+	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
+	CollisionSphere->InitSphereRadius(11.0f);
+	CollisionSphere->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+	RootComponent = CollisionSphere;
+
+	BallMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallMesh"));
+	BallMesh->SetupAttachment(RootComponent);
+	BallMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	BallPhysicsComponent = CreateDefaultSubobject<UBallPhysicsComponent>(TEXT("BallPhysicsComponent"));
+}
+
+void ASoccerBall::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (USoccerGameSettings* Settings = USoccerGameSettings::Get())
+	{
+		CollisionSphere->SetSphereRadius(Settings->BallRadius);
+		if (BallPhysicsComponent)
+		{
+			BallPhysicsComponent->Mass = Settings->BallMass;
+			BallPhysicsComponent->AirResistance = Settings->AirResistance;
+			BallPhysicsComponent->MaxSpeed = Settings->MaxBallSpeed;
+		}
+	}
+}
+
+void ASoccerBall::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!BallPhysicsComponent)
+	{
+		return;
+	}
+
+	BallPhysicsComponent->SimulatePhysics(DeltaTime);
+	const FVector DesiredLocation = GetActorLocation() + BallPhysicsComponent->GetVelocity() * DeltaTime;
+
+	FHitResult Hit;
+	SetActorLocation(DesiredLocation, true, &Hit);
+
+	if (Hit.bBlockingHit)
+	{
+		HandleImpact(Hit);
+	}
+}
+
+void ASoccerBall::ApplyKick(const FVector& Direction, float Power)
+{
+	if (!BallPhysicsComponent || Direction.IsNearlyZero())
+	{
+		return;
+	}
+
+	const FVector Impulse = Direction.GetSafeNormal() * Power * KickForceMultiplier * USoccerGameSettings::Get()->KickPower;
+	BallPhysicsComponent->ApplyImpulse(Impulse);
+}
+
+void ASoccerBall::ApplyPass(const FVector& Direction, float Power)
+{
+	ApplyKick(Direction, Power * PassForceMultiplier);
+}
+
+void ASoccerBall::ApplyHeader(const FVector& Direction, float Power)
+{
+	if (!BallPhysicsComponent || Direction.IsNearlyZero())
+	{
+		return;
+	}
+
+	const FVector HeaderDirection = (Direction.GetSafeNormal() + FVector::UpVector * 0.4f).GetSafeNormal();
+	const FVector Impulse = HeaderDirection * Power * HeaderForceMultiplier * USoccerGameSettings::Get()->KickPower;
+	BallPhysicsComponent->ApplyImpulse(Impulse);
+}
+
+void ASoccerBall::ResetBall(const FVector& Location)
+{
+	SetActorLocation(Location);
+	if (BallPhysicsComponent)
+	{
+		BallPhysicsComponent->SetVelocity(FVector::ZeroVector);
+	}
+}
+
+void ASoccerBall::HandleImpact(const FHitResult& Hit)
+{
+	if (!BallPhysicsComponent)
+	{
+		return;
+	}
+
+	const FVector CurrentVelocity = BallPhysicsComponent->GetVelocity();
+	const FVector ReflectedVelocity = FVector::MirrorByVector(CurrentVelocity, Hit.Normal) * 0.5f;
+	BallPhysicsComponent->SetVelocity(ReflectedVelocity);
+}

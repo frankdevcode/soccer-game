@@ -20,7 +20,7 @@
 ### **PHASE 2: Core Gameplay Foundation**
 - [x] **Step 6**: Create basic game loop and framework
 - [x] **Step 7**: Implement player movement system
-- [ ] **Step 8**: Develop ball physics engine
+- [x] **Step 8**: Develop ball physics engine
 - [ ] **Step 9**: Create basic pitch/court structure
 - [ ] **Step 10**: Implement camera system
 
@@ -96,29 +96,30 @@
 
 ---
 
-## 📝 Current Step: **STEP 7 - Implement Player Movement System** ✅ COMPLETED
+## 📝 Current Step: **STEP 8 - Develop Ball Physics Engine** ✅ COMPLETED
 
 ### Objectives:
-1. ✅ Replace the basic movement bindings with a vector-based movement handler
-2. ✅ Configure tunable acceleration and deceleration for the character movement component
-3. ✅ Preserve stamina-driven sprint behavior while keeping the movement flow stable
-4. ✅ Keep the movement state ready for future animation and ball interaction work
+1. ✅ Create a ball actor with physics simulation
+2. ✅ Add a dedicated ball physics component for drag, velocity, and impact response
+3. ✅ Implement kicks, passes, and headers with impulse-based behavior
+4. ✅ Connect player interaction to nearest ball detection
 5. ✅ Verify the modified C++ files are error-free in editor diagnostics
 
 ### Deliverables:
-- Vector-based movement processing in `ASoccerPlayerCharacter`
-- Tunable movement settings in `ASoccerPlayerCharacter`
-- Sprint integration that continues to consume and regenerate stamina
+- `ASoccerBall` actor with collision and mesh components
+- `UBallPhysicsComponent` with drag, speed clamping, and impulse application
+- Ball interaction methods for kicks, passes, and headers
+- Nearest ball detection in `ASoccerPlayerCharacter`
 - Updated documentation and requirements tracking
 
 ### Key Features:
-- Enhanced Input vector movement support
-- Character movement tuning via configurable acceleration values
-- Stable movement intent tracking for future gameplay systems
+- Ball movement simulated continuously via `Tick`
+- Ball response to impacts with velocity reflection
+- Player ball control ready for gameplay integration
 - Clean editor diagnostics on the modified C++ files
 
 ### Next Step:
-- **STEP 8**: Develop ball physics engine
+- **STEP 9**: Create basic pitch/court structure
 
 ## 🏗️ Project Structure
 ```

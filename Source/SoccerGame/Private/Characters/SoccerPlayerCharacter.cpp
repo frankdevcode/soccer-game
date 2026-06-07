@@ -10,6 +10,8 @@
 #include "InputActionValue.h"
 #include "InputModifiers.h"
 #include "InputActionValue.h"
+#include "Kismet/GameplayStatics.h"
+#include "Ball/SoccerBall.h"
 
 ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	: TeamId(1)
@@ -20,6 +22,7 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	, Acceleration(1200.0f)
 	, Deceleration(1600.0f)
 	, bIsSprinting(false)
+	, BallInteractionRange(300.0f)
 	, MaxStamina(100.0f)
 	, CurrentStamina(100.0f)
 	, StaminaRegenerationRate(20.0f)
@@ -215,9 +218,14 @@ void ASoccerPlayerCharacter::KickBall(float Power)
 {
 	if (CurrentStamina >= 5.0f)
 	{
-		CurrentStamina -= 5.0f;
-		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Kicking ball with power %.1f"), Power);
-		// TODO: Implement ball physics interaction
+		ASoccerBall* Ball = FindNearestBall(BallInteractionRange);
+		if (Ball)
+		{
+			CurrentStamina -= 5.0f;
+			const FVector BallDirection = (Ball->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+			Ball->ApplyKick(BallDirection, Power);
+			UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Kicking ball with power %.1f"), Power);
+		}
 	}
 }
 
@@ -225,9 +233,14 @@ void ASoccerPlayerCharacter::PassBall(AActor* TargetPlayer, float Power)
 {
 	if (CurrentStamina >= 3.0f && TargetPlayer)
 	{
-		CurrentStamina -= 3.0f;
-		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Passing ball to teammate with power %.1f"), Power);
-		// TODO: Implement pass mechanics
+		ASoccerBall* Ball = FindNearestBall(BallInteractionRange);
+		if (Ball)
+		{
+			CurrentStamina -= 3.0f;
+			const FVector BallDirection = (TargetPlayer->GetActorLocation() - Ball->GetActorLocation()).GetSafeNormal();
+			Ball->ApplyPass(BallDirection, Power);
+			UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Passing ball to teammate with power %.1f"), Power);
+		}
 	}
 }
 
@@ -235,9 +248,14 @@ void ASoccerPlayerCharacter::HeadBall()
 {
 	if (CurrentStamina >= 2.0f)
 	{
-		CurrentStamina -= 2.0f;
-		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Heading ball"));
-		// TODO: Implement header mechanics
+		ASoccerBall* Ball = FindNearestBall(BallInteractionRange);
+		if (Ball)
+		{
+			CurrentStamina -= 2.0f;
+			const FVector BallDirection = (Ball->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+			Ball->ApplyHeader(BallDirection, 1.0f);
+			UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Heading ball"));
+		}
 	}
 }
 
@@ -249,6 +267,38 @@ void ASoccerPlayerCharacter::JumpForBall()
 		Jump();
 		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Jumping for ball"));
 	}
+}
+
+ASoccerBall* ASoccerPlayerCharacter::FindNearestBall(float MaxDistance) const
+{
+	if (!GetWorld())
+	{
+		return nullptr;
+	}
+
+	TArray<AActor*> FoundBalls;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASoccerBall::StaticClass(), FoundBalls);
+
+	ASoccerBall* ClosestBall = nullptr;
+	float ClosestDistance = MaxDistance;
+
+	for (AActor* Actor : FoundBalls)
+	{
+		ASoccerBall* Ball = Cast<ASoccerBall>(Actor);
+		if (!Ball)
+		{
+			continue;
+		}
+
+		const float Distance = FVector::Dist(Ball->GetActorLocation(), GetActorLocation());
+		if (Distance <= ClosestDistance)
+		{
+			ClosestDistance = Distance;
+			ClosestBall = Ball;
+		}
+	}
+
+	return ClosestBall;
 }
 
 void ASoccerPlayerCharacter::UpdateStamina(float DeltaTime)
