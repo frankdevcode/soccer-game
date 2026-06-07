@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Ball/SoccerBall.h"
 #include "Characters/SoccerCharacterRig.h"
+#include "Characters/SoccerPlayerAnimInstance.h"
 #include "Animation/AnimInstance.h"
 #include "Components/CapsuleComponent.h"
 #include "Core/SoccerGameSettings.h"
@@ -467,5 +468,21 @@ void ASoccerPlayerCharacter::ConsumeSprint(float DeltaTime)
 
 void ASoccerPlayerCharacter::UpdateAnimations()
 {
-	// TODO: Update animation state based on movement
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	if (!MeshComponent)
+	{
+		return;
+	}
+
+	if (USoccerPlayerAnimInstance* AnimInstance = Cast<USoccerPlayerAnimInstance>(MeshComponent->GetAnimInstance()))
+	{
+		const FVector Velocity = GetVelocity();
+		const float Speed = FVector(Velocity.X, Velocity.Y, 0.0f).Size();
+		const bool bInAir = GetCharacterMovement() ? GetCharacterMovement()->IsFalling() : false;
+		const bool bMoving = Speed > KINDA_SMALL_NUMBER;
+		const FVector LocalVelocity = GetActorRotation().UnrotateVector(Velocity);
+		const float Direction = LocalVelocity.IsNearlyZero() ? 0.0f : FMath::RadiansToDegrees(FMath::Atan2(LocalVelocity.Y, LocalVelocity.X));
+
+		AnimInstance->UpdateState(Speed, Direction, bMoving, bIsSprinting, bInAir);
+	}
 }
