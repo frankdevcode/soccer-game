@@ -33,7 +33,7 @@ public:
 	virtual void NativeInitializeAnimation() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Animation")
-	void UpdateState(float InSpeed, float InDirection, bool bMoving, bool bSprinting, bool bInAir, bool bIsGoalkeeper, bool bIsPerformingSave);
+	void UpdateState(float InSpeed, float InDirection, bool bMoving, bool bSprinting, bool bInAir, bool bIsGoalkeeper, bool bIsPerformingSave, FName InMotionMatchPose);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
 	EPlayerAnimationState AnimationState;
@@ -61,4 +61,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
 	bool bIsPerformingSave;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
+	FName MotionMatchPose;
 };

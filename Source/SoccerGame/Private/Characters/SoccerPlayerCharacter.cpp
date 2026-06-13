@@ -14,6 +14,7 @@
 #include "Ball/SoccerBall.h"
 #include "Characters/SoccerCharacterRig.h"
 #include "Characters/SoccerPlayerAnimInstance.h"
+#include "Characters/SoccerMotionMatchingComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Components/CapsuleComponent.h"
 #include "Core/SoccerGameSettings.h"
@@ -88,6 +89,9 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
+
+	// Motion matching component
+	MotionMatchingComponent = CreateDefaultSubobject<USoccerMotionMatchingComponent>(TEXT("MotionMatchingComponent"));
 	bUseControllerRotationRoll = false;
 
 	// Create camera boom (pulls toward player if there's a collision)
@@ -585,17 +589,24 @@ void ASoccerPlayerCharacter::UpdateAnimations()
 		return;
 	}
 
+	const FVector Velocity = GetVelocity();
+	const float Speed = FVector(Velocity.X, Velocity.Y, 0.0f).Size();
+	const bool bInAir = GetCharacterMovement() ? GetCharacterMovement()->IsFalling() : false;
+	const bool bMoving = Speed > KINDA_SMALL_NUMBER;
+	const FVector LocalVelocity = GetActorRotation().UnrotateVector(Velocity);
+	const float Direction = LocalVelocity.IsNearlyZero() ? 0.0f : FMath::RadiansToDegrees(FMath::Atan2(LocalVelocity.Y, LocalVelocity.X));
+	const float CurrentTime = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
+	const bool bIsPerformingSave = PlayerPosition == EPlayerPosition::Goalkeeper && (CurrentTime - LastGoalkeeperDiveTime) < GoalkeeperSaveAnimationDuration;
+
+	FName BestPose = NAME_None;
+	if (MotionMatchingComponent)
+	{
+		MotionMatchingComponent->UpdateMotionMatch(Speed, Direction, bIsSprinting, bInAir, PlayerPosition == EPlayerPosition::Goalkeeper, bIsPerformingSave);
+		BestPose = MotionMatchingComponent->GetBestMatchPose();
+	}
+
 	if (USoccerPlayerAnimInstance* AnimInstance = Cast<USoccerPlayerAnimInstance>(MeshComponent->GetAnimInstance()))
 	{
-		const FVector Velocity = GetVelocity();
-		const float Speed = FVector(Velocity.X, Velocity.Y, 0.0f).Size();
-		const bool bInAir = GetCharacterMovement() ? GetCharacterMovement()->IsFalling() : false;
-		const bool bMoving = Speed > KINDA_SMALL_NUMBER;
-		const FVector LocalVelocity = GetActorRotation().UnrotateVector(Velocity);
-		const float Direction = LocalVelocity.IsNearlyZero() ? 0.0f : FMath::RadiansToDegrees(FMath::Atan2(LocalVelocity.Y, LocalVelocity.X));
-		const float CurrentTime = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
-		const bool bIsPerformingSave = PlayerPosition == EPlayerPosition::Goalkeeper && (CurrentTime - LastGoalkeeperDiveTime) < GoalkeeperSaveAnimationDuration;
-
-		AnimInstance->UpdateState(Speed, Direction, bMoving, bIsSprinting, bInAir, PlayerPosition == EPlayerPosition::Goalkeeper, bIsPerformingSave);
+		AnimInstance->UpdateState(Speed, Direction, bMoving, bIsSprinting, bInAir, PlayerPosition == EPlayerPosition::Goalkeeper, bIsPerformingSave, BestPose);
 	}
 }

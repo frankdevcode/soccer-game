@@ -14,6 +14,8 @@ class UInputAction;
 class UCharacterMovementComponent;
 class UAnimInstance;
 class USkeletalMesh;
+class UActorComponent;
+class USoccerMotionMatchingComponent;
 class ASoccerBall;
 
 /**
@@ -213,6 +215,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Camera")
 	class UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
+	USoccerMotionMatchingComponent* MotionMatchingComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Camera")
 	float CameraFollowDistance;

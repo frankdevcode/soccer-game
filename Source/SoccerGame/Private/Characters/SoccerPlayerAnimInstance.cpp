@@ -30,7 +30,7 @@ void USoccerPlayerAnimInstance::NativeInitializeAnimation()
 	bIsPerformingSave = false;
 }
 
-void USoccerPlayerAnimInstance::UpdateState(float InSpeed, float InDirection, bool bMoving, bool bSprinting, bool bInAir, bool bIsGoalkeeperParam, bool bIsPerformingSaveParam)
+void USoccerPlayerAnimInstance::UpdateState(float InSpeed, float InDirection, bool bMoving, bool bSprinting, bool bInAir, bool bIsGoalkeeperParam, bool bIsPerformingSaveParam, FName InMotionMatchPose)
 {
 	Speed = InSpeed;
 	Direction = InDirection;
@@ -40,6 +40,7 @@ void USoccerPlayerAnimInstance::UpdateState(float InSpeed, float InDirection, bo
 	bIsJumping = bInAir;
 	bIsGoalkeeper = bIsGoalkeeperParam;
 	bIsPerformingSave = bIsPerformingSaveParam;
+	MotionMatchPose = InMotionMatchPose;
 
 	if (bIsPerformingSave)
 	{
