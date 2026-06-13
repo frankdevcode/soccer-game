@@ -20,6 +20,15 @@ public:
 	static FVector ApplyDrag(const FVector& Velocity, float DragCoefficient, float DeltaTime);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Utilities")
+	static FVector ApplyMagnus(const FVector& Velocity, const FVector& Spin, float MagnusCoefficient, float DeltaTime);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Utilities")
+	static FVector ApplyGroundFriction(const FVector& Velocity, float FrictionCoefficient, float DeltaTime);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Utilities")
+	static FVector ApplySpinDamping(const FVector& Spin, float DampingCoefficient, float DeltaTime);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Utilities")
 	static FVector ClampVelocity(const FVector& Velocity, float MaxSpeed);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Utilities")

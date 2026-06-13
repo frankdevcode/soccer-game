@@ -25,6 +25,9 @@ USoccerGameSettings::USoccerGameSettings()
 	, CameraRotationLagSpeed(12.0f)
 	, MaxBallSpeed(5000.0f) // cm/s
 	, AirResistance(0.1f)
+	, BallMagnusCoefficient(0.0005f)
+	, BallGroundFriction(0.15f)
+	, BallSpinDamping(0.08f)
 	, KickPower(1000.0f)
 	, BackendURL(TEXT("localhost"))
 	, BackendPort(3001)
@@ -84,6 +87,9 @@ void USoccerGameSettings::SetDefaults()
 	CameraRotationLagSpeed = 12.0f;
 	MaxBallSpeed = 5000.0f;
 	AirResistance = 0.1f;
+	BallMagnusCoefficient = 0.0005f;
+	BallGroundFriction = 0.15f;
+	BallSpinDamping = 0.08f;
 	KickPower = 1000.0f;
 	BackendURL = TEXT("localhost");
 	BackendPort = 3001;

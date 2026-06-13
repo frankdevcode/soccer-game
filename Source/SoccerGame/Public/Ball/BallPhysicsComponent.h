@@ -33,6 +33,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
 	const FVector& GetVelocity() const { return Velocity; }
 
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
+	void SetSpin(const FVector& NewSpin);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
+	const FVector& GetSpin() const { return Spin; }
+
 	// Ball configuration
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
 	float Mass;
@@ -43,6 +49,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
 	float MaxSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float MagnusCoefficient;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float GroundFriction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float SpinDamping;
+
 private:
 	FVector Velocity;
+	FVector Spin;
 };

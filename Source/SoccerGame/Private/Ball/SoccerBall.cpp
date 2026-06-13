@@ -70,13 +70,29 @@ void ASoccerBall::ApplyKick(const FVector& Direction, float Power)
 		return;
 	}
 
-	const FVector Impulse = Direction.GetSafeNormal() * Power * KickForceMultiplier * USoccerGameSettings::Get()->KickPower;
+	const FVector NormalizedDirection = Direction.GetSafeNormal();
+	const float Strength = Power * KickForceMultiplier * USoccerGameSettings::Get()->KickPower;
+	const FVector Impulse = NormalizedDirection * Strength;
 	BallPhysicsComponent->ApplyImpulse(Impulse);
+
+	const FVector Spin = FVector::CrossProduct(FVector::UpVector, NormalizedDirection) * 180.0f * Power;
+	BallPhysicsComponent->SetSpin(Spin);
 }
 
 void ASoccerBall::ApplyPass(const FVector& Direction, float Power)
 {
-	ApplyKick(Direction, Power * PassForceMultiplier);
+	if (!BallPhysicsComponent || Direction.IsNearlyZero())
+	{
+		return;
+	}
+
+	const FVector NormalizedDirection = Direction.GetSafeNormal();
+	const float Strength = Power * PassForceMultiplier * USoccerGameSettings::Get()->KickPower;
+	const FVector Impulse = NormalizedDirection * Strength;
+	BallPhysicsComponent->ApplyImpulse(Impulse);
+
+	const FVector Spin = FVector::CrossProduct(FVector::UpVector, NormalizedDirection) * 120.0f * Power;
+	BallPhysicsComponent->SetSpin(Spin);
 }
 
 void ASoccerBall::ApplyHeader(const FVector& Direction, float Power)
@@ -87,8 +103,12 @@ void ASoccerBall::ApplyHeader(const FVector& Direction, float Power)
 	}
 
 	const FVector HeaderDirection = (Direction.GetSafeNormal() + FVector::UpVector * 0.4f).GetSafeNormal();
-	const FVector Impulse = HeaderDirection * Power * HeaderForceMultiplier * USoccerGameSettings::Get()->KickPower;
+	const float Strength = Power * HeaderForceMultiplier * USoccerGameSettings::Get()->KickPower;
+	const FVector Impulse = HeaderDirection * Strength;
 	BallPhysicsComponent->ApplyImpulse(Impulse);
+
+	const FVector Spin = FVector::CrossProduct(HeaderDirection, FVector::UpVector) * 220.0f * Power;
+	BallPhysicsComponent->SetSpin(Spin);
 }
 
 void ASoccerBall::ResetBall(const FVector& Location)
@@ -97,6 +117,7 @@ void ASoccerBall::ResetBall(const FVector& Location)
 	if (BallPhysicsComponent)
 	{
 		BallPhysicsComponent->SetVelocity(FVector::ZeroVector);
+		BallPhysicsComponent->SetSpin(FVector::ZeroVector);
 	}
 }
 
