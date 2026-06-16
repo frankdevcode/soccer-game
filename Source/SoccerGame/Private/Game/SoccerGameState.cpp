@@ -134,6 +134,11 @@ FTeamStats ASoccerGameState::GetTeamStats(int32 TeamId) const
 	return TeamId == 1 ? Team1Stats : Team2Stats;
 }
 
+TArray<ASoccerPlayerCharacter*> ASoccerGameState::GetRegisteredPlayers() const
+{
+	return RegisteredPlayers;
+}
+
 void ASoccerGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

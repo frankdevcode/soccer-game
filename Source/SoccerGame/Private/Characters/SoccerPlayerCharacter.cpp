@@ -18,6 +18,9 @@
 #include "Animation/AnimInstance.h"
 #include "Components/CapsuleComponent.h"
 #include "Core/SoccerGameSettings.h"
+#include "GameFramework/GameStateBase.h"
+#include "Game/SoccerGameState.h"
+#include "Kismet/GameplayStatics.h"
 
 ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	: TeamId(1)
@@ -111,6 +114,12 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 void ASoccerPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Register player in game state so passes can target teammates.
+	if (ASoccerGameState* GameState = GetWorld()->GetGameState<ASoccerGameState>())
+	{
+		GameState->RegisterPlayer(this, TeamId);
+	}
 
 	// Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -329,32 +338,51 @@ void ASoccerPlayerCharacter::KickBall(float Power)
 
 void ASoccerPlayerCharacter::PassBall(AActor* TargetPlayer, float Power)
 {
-	if (CurrentStamina >= 3.0f && TargetPlayer)
+	if (CurrentStamina < 3.0f)
 	{
-		ASoccerBall* Ball = FindNearestBall(BallInteractionRange);
-		if (Ball)
-		{
-			CurrentStamina -= 3.0f;
-			const FVector BallDirection = (TargetPlayer->GetActorLocation() - Ball->GetActorLocation()).GetSafeNormal();
-			Ball->ApplyPass(BallDirection, Power);
-			UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Passing ball to teammate with power %.1f"), Power);
-		}
+		return;
 	}
+
+	ASoccerBall* Ball = FindNearestBall(BallInteractionRange);
+	if (!Ball)
+	{
+		return;
+	}
+
+	ASoccerPlayerCharacter* PassTo = Cast<ASoccerPlayerCharacter>(TargetPlayer);
+	if (!PassTo)
+	{
+		PassTo = FindBestPassTarget(BallInteractionRange * 3.0f);
+	}
+
+	if (!PassTo)
+	{
+		return;
+	}
+
+	CurrentStamina -= 3.0f;
+	const FVector BallDirection = (PassTo->GetActorLocation() - Ball->GetActorLocation()).GetSafeNormal();
+	Ball->ApplyPass(BallDirection, Power);
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Passing ball to teammate %d with power %.1f"), PassTo->GetPlayerNumber(), Power);
 }
 
 void ASoccerPlayerCharacter::HeadBall()
 {
-	if (CurrentStamina >= 2.0f)
+	if (CurrentStamina < 2.0f)
 	{
-		ASoccerBall* Ball = FindNearestBall(BallInteractionRange);
-		if (Ball)
-		{
-			CurrentStamina -= 2.0f;
-			const FVector BallDirection = (Ball->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-			Ball->ApplyHeader(BallDirection, 1.0f);
-			UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Heading ball"));
-		}
+		return;
 	}
+
+	ASoccerBall* Ball = FindNearestBall(BallInteractionRange);
+	if (!Ball)
+	{
+		return;
+	}
+
+	CurrentStamina -= 2.0f;
+	const FVector BallDirection = (Ball->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	Ball->ApplyHeader(BallDirection, 1.0f);
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Heading ball"));
 }
 
 void ASoccerPlayerCharacter::JumpForBall()
@@ -403,6 +431,49 @@ ASoccerBall* ASoccerPlayerCharacter::FindNearestBall(float MaxDistance) const
 	}
 
 	return ClosestBall;
+}
+
+ASoccerPlayerCharacter* ASoccerPlayerCharacter::FindBestPassTarget(float MaxDistance) const
+{
+	if (!GetWorld())
+	{
+		return nullptr;
+	}
+
+	ASoccerGameState* GameState = GetWorld()->GetGameState<ASoccerGameState>();
+	if (!GameState)
+	{
+		return nullptr;
+	}
+
+	ASoccerPlayerCharacter* BestTarget = nullptr;
+	float BestScore = -FLT_MAX;
+
+	for (ASoccerPlayerCharacter* Player : GameState->GetRegisteredPlayers())
+	{
+		if (!Player || Player == this || Player->GetTeamId() != TeamId)
+		{
+			continue;
+		}
+
+		const float Distance = FVector::Dist(Player->GetActorLocation(), GetActorLocation());
+		if (Distance > MaxDistance)
+		{
+			continue;
+		}
+
+		const FVector ToPlayer = Player->GetActorLocation() - GetActorLocation();
+		const float ForwardAlignment = FVector::DotProduct(GetActorForwardVector().GetSafeNormal(), ToPlayer.GetSafeNormal());
+		const float Score = ForwardAlignment - (Distance * 0.001f);
+
+		if (Score > BestScore)
+		{
+			BestScore = Score;
+			BestTarget = Player;
+		}
+	}
+
+	return BestTarget;
 }
 
 void ASoccerPlayerCharacter::ConfigurePlayerModel(USkeletalMesh* Mesh, TSubclassOf<UAnimInstance> AnimBP)
@@ -579,6 +650,16 @@ void ASoccerPlayerCharacter::ConsumeSprint(float DeltaTime)
 	{
 		StopSprinting();
 	}
+}
+
+void ASoccerPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (ASoccerGameState* GameState = GetWorld()->GetGameState<ASoccerGameState>())
+	{
+		GameState->UnregisterPlayer(this);
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void ASoccerPlayerCharacter::UpdateAnimations()

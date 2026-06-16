@@ -17,6 +17,7 @@ class USkeletalMesh;
 class UActorComponent;
 class USoccerMotionMatchingComponent;
 class ASoccerBall;
+class ASoccerPlayerCharacter;
 
 /**
  * @enum EPlayerPosition
@@ -47,6 +48,7 @@ public:
 	ASoccerPlayerCharacter();
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -103,7 +105,10 @@ public:
 	void KickBall(float Power = 1.0f);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
-	void PassBall(AActor* TargetPlayer, float Power = 0.7f);
+	void PassBall(AActor* TargetPlayer = nullptr, float Power = 0.7f);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
+	ASoccerPlayerCharacter* FindBestPassTarget(float MaxDistance) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
 	void HeadBall();

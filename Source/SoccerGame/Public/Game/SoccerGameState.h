@@ -84,6 +84,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Players")
 	int32 GetPlayerCount() const { return RegisteredPlayers.Num(); }
 
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Players")
+	TArray<class ASoccerPlayerCharacter*> GetRegisteredPlayers() const;
+
 	// Match state sync
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Match")
 	void SetMatchActive(bool bActive);
