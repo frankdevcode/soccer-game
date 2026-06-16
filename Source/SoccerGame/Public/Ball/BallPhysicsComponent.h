@@ -28,6 +28,9 @@ public:
 	void ApplyImpulse(const FVector& Impulse);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
+	void ApplyCollisionResponse(const FVector& Normal);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
 	void SetVelocity(const FVector& NewVelocity);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
@@ -57,6 +60,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
 	float SpinDamping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float BounceCoefficient;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float CollisionFriction;
 
 private:
 	FVector Velocity;

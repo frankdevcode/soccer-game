@@ -29,6 +29,9 @@ public:
 	static FVector ApplySpinDamping(const FVector& Spin, float DampingCoefficient, float DeltaTime);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Utilities")
+	static FVector ReflectVelocity(const FVector& Velocity, const FVector& Normal, float BounceCoefficient, float FrictionCoefficient);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Utilities")
 	static FVector ClampVelocity(const FVector& Velocity, float MaxSpeed);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Utilities")

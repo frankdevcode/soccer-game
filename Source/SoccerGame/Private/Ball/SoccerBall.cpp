@@ -128,7 +128,5 @@ void ASoccerBall::HandleImpact(const FHitResult& Hit)
 		return;
 	}
 
-	const FVector CurrentVelocity = BallPhysicsComponent->GetVelocity();
-	const FVector ReflectedVelocity = FVector::MirrorByVector(CurrentVelocity, Hit.Normal) * 0.5f;
-	BallPhysicsComponent->SetVelocity(ReflectedVelocity);
+	BallPhysicsComponent->ApplyCollisionResponse(Hit.Normal);
 }

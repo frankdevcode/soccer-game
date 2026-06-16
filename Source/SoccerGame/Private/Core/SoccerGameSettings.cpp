@@ -28,6 +28,8 @@ USoccerGameSettings::USoccerGameSettings()
 	, BallMagnusCoefficient(0.0005f)
 	, BallGroundFriction(0.15f)
 	, BallSpinDamping(0.08f)
+	, BallBounceCoefficient(0.72f)
+	, BallCollisionFriction(0.22f)
 	, KickPower(1000.0f)
 	, BackendURL(TEXT("localhost"))
 	, BackendPort(3001)
@@ -90,6 +92,8 @@ void USoccerGameSettings::SetDefaults()
 	BallMagnusCoefficient = 0.0005f;
 	BallGroundFriction = 0.15f;
 	BallSpinDamping = 0.08f;
+	BallBounceCoefficient = 0.72f;
+	BallCollisionFriction = 0.22f;
 	KickPower = 1000.0f;
 	BackendURL = TEXT("localhost");
 	BackendPort = 3001;

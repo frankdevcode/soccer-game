@@ -50,6 +50,19 @@ FVector USoccerPhysicsHelpers::ApplySpinDamping(const FVector& Spin, float Dampi
 	return FMath::Lerp(Spin, FVector::ZeroVector, Damping);
 }
 
+FVector USoccerPhysicsHelpers::ReflectVelocity(const FVector& Velocity, const FVector& Normal, float BounceCoefficient, float FrictionCoefficient)
+{
+	if (Velocity.IsNearlyZero())
+	{
+		return FVector::ZeroVector;
+	}
+
+	const FVector Reflected = FVector::MirrorByVector(Velocity, Normal) * FMath::Clamp(BounceCoefficient, 0.0f, 1.0f);
+	const FVector Tangent = Reflected - Normal * FVector::DotProduct(Reflected, Normal);
+	const FVector DampenedTangent = Tangent * FMath::Clamp(1.0f - FrictionCoefficient, 0.0f, 1.0f);
+	return Normal * FVector::DotProduct(Reflected, Normal) + DampenedTangent;
+}
+
 FVector USoccerPhysicsHelpers::ClampVelocity(const FVector& Velocity, float MaxSpeed)
 {
 	return USoccerMathHelpers::ClampMagnitude(Velocity, MaxSpeed);

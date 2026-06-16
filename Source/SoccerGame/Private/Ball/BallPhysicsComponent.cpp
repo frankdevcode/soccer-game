@@ -11,6 +11,8 @@ UBallPhysicsComponent::UBallPhysicsComponent()
 	, MagnusCoefficient(0.0005f)
 	, GroundFriction(0.15f)
 	, SpinDamping(0.08f)
+	, BounceCoefficient(0.72f)
+	, CollisionFriction(0.22f)
 	, Velocity(FVector::ZeroVector)
 	, Spin(FVector::ZeroVector)
 {
@@ -29,6 +31,8 @@ void UBallPhysicsComponent::BeginPlay()
 		MagnusCoefficient = Settings->BallMagnusCoefficient;
 		GroundFriction = Settings->BallGroundFriction;
 		SpinDamping = Settings->BallSpinDamping;
+		BounceCoefficient = Settings->BallBounceCoefficient;
+		CollisionFriction = Settings->BallCollisionFriction;
 	}
 }
 
@@ -75,6 +79,19 @@ void UBallPhysicsComponent::ApplyImpulse(const FVector& Impulse)
 
 	Velocity += Impulse / Mass;
 	Velocity = USoccerPhysicsHelpers::ClampVelocity(Velocity, MaxSpeed);
+}
+
+void UBallPhysicsComponent::ApplyCollisionResponse(const FVector& Normal)
+{
+	if (Velocity.IsNearlyZero())
+	{
+		return;
+	}
+
+	const FVector SafeNormal = Normal.GetSafeNormal();
+	Velocity = USoccerPhysicsHelpers::ReflectVelocity(Velocity, SafeNormal, BounceCoefficient, CollisionFriction);
+	Velocity = USoccerPhysicsHelpers::ClampVelocity(Velocity, MaxSpeed);
+	Spin *= FMath::Clamp(1.0f - CollisionFriction * 0.5f, 0.0f, 1.0f);
 }
 
 void UBallPhysicsComponent::SetSpin(const FVector& NewSpin)

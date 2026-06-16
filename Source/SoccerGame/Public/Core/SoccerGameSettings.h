@@ -93,6 +93,12 @@ public:
 	float BallSpinDamping;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
+	float BallBounceCoefficient;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
+	float BallCollisionFriction;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
 	float KickPower;
 
 	// Network settings
