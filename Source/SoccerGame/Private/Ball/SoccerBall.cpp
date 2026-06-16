@@ -128,5 +128,5 @@ void ASoccerBall::HandleImpact(const FHitResult& Hit)
 		return;
 	}
 
-	BallPhysicsComponent->ApplyCollisionResponse(Hit.Normal);
+	BallPhysicsComponent->ApplyCollisionResponseFromHit(Hit);
 }

@@ -99,6 +99,18 @@ public:
 	float BallCollisionFriction;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
+	float FloorBounceCoefficient;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
+	float FloorFriction;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
+	float WallBounceCoefficient;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
+	float WallFriction;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
 	float KickPower;
 
 	// Network settings

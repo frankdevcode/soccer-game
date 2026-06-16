@@ -28,7 +28,10 @@ public:
 	void ApplyImpulse(const FVector& Impulse);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
-	void ApplyCollisionResponse(const FVector& Normal);
+	void ApplyCollisionResponse(const FVector& Normal, float BounceCoefficientOverride = -1.0f, float CollisionFrictionOverride = -1.0f);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
+	void ApplyCollisionResponseFromHit(const FHitResult& Hit);
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Ball")
 	void SetVelocity(const FVector& NewVelocity);
@@ -66,6 +69,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
 	float CollisionFriction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float FloorBounceCoefficient;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float FloorFriction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float WallBounceCoefficient;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
+	float WallFriction;
 
 private:
 	FVector Velocity;

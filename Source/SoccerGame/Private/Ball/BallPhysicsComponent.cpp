@@ -33,6 +33,10 @@ void UBallPhysicsComponent::BeginPlay()
 		SpinDamping = Settings->BallSpinDamping;
 		BounceCoefficient = Settings->BallBounceCoefficient;
 		CollisionFriction = Settings->BallCollisionFriction;
+		FloorBounceCoefficient = Settings->FloorBounceCoefficient;
+		FloorFriction = Settings->FloorFriction;
+		WallBounceCoefficient = Settings->WallBounceCoefficient;
+		WallFriction = Settings->WallFriction;
 	}
 }
 
@@ -81,17 +85,43 @@ void UBallPhysicsComponent::ApplyImpulse(const FVector& Impulse)
 	Velocity = USoccerPhysicsHelpers::ClampVelocity(Velocity, MaxSpeed);
 }
 
-void UBallPhysicsComponent::ApplyCollisionResponse(const FVector& Normal)
+void UBallPhysicsComponent::ApplyCollisionResponseFromHit(const FHitResult& Hit)
+{
+	float EffectiveBounce = BounceCoefficient;
+	float EffectiveFriction = CollisionFriction;
+
+	if (Hit.Component.IsValid())
+	{
+		const FString ComponentName = Hit.Component->GetName();
+
+		if (ComponentName.Contains(TEXT("FieldMesh")))
+		{
+			EffectiveBounce = FloorBounceCoefficient;
+			EffectiveFriction = FloorFriction;
+		}
+		else if (ComponentName.Contains(TEXT("Boundary")) || ComponentName.Contains(TEXT("Goal")))
+		{
+			EffectiveBounce = WallBounceCoefficient;
+			EffectiveFriction = WallFriction;
+		}
+	}
+
+	ApplyCollisionResponse(Hit.Normal, EffectiveBounce, EffectiveFriction);
+}
+
+void UBallPhysicsComponent::ApplyCollisionResponse(const FVector& Normal, float BounceCoefficientOverride, float CollisionFrictionOverride)
 {
 	if (Velocity.IsNearlyZero())
 	{
 		return;
 	}
 
+	const float EffectiveBounce = BounceCoefficientOverride >= 0.0f ? BounceCoefficientOverride : BounceCoefficient;
+	const float EffectiveFriction = CollisionFrictionOverride >= 0.0f ? CollisionFrictionOverride : CollisionFriction;
 	const FVector SafeNormal = Normal.GetSafeNormal();
-	Velocity = USoccerPhysicsHelpers::ReflectVelocity(Velocity, SafeNormal, BounceCoefficient, CollisionFriction);
+	Velocity = USoccerPhysicsHelpers::ReflectVelocity(Velocity, SafeNormal, EffectiveBounce, EffectiveFriction);
 	Velocity = USoccerPhysicsHelpers::ClampVelocity(Velocity, MaxSpeed);
-	Spin *= FMath::Clamp(1.0f - CollisionFriction * 0.5f, 0.0f, 1.0f);
+	Spin *= FMath::Clamp(1.0f - EffectiveFriction * 0.5f, 0.0f, 1.0f);
 }
 
 void UBallPhysicsComponent::SetSpin(const FVector& NewSpin)
