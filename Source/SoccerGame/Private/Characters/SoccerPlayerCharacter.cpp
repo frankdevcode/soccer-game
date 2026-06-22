@@ -123,6 +123,16 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	PrimaryActorTick.TickInterval = 0.016f; // ~60 FPS
 }
 
+void ASoccerPlayerCharacter::SetFormationTarget(const FVector& Target)
+{
+	FormationTarget = Target;
+}
+
+const FVector& ASoccerPlayerCharacter::GetFormationTarget() const
+{
+	return FormationTarget;
+}
+
 void ASoccerPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -132,6 +142,8 @@ void ASoccerPlayerCharacter::BeginPlay()
 	{
 		GameState->RegisterPlayer(this, TeamId);
 	}
+
+	// Ensure goalkeeper behavior knows player position (component will check player's position on BeginPlay)
 
 	// Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))

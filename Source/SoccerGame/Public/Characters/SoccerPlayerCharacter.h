@@ -145,6 +145,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Player")
 	float GetMaxStamina() const { return MaxStamina; }
 
+	// Formation target API
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Formation")
+	void SetFormationTarget(const FVector& Target);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Formation")
+	const FVector& GetFormationTarget() const;
+
 protected:
 	// Player information
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Player")

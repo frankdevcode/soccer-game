@@ -95,6 +95,14 @@ void ASoccerGameMode::InitializeMatch(int32 PlayerCount, float MatchDurationSeco
 		TeamManager->RegisterTeam(FSoccerTeamRecord{2, TEXT("Team 2"), 0, 0, 0});
 	}
 
+	// Apply default formations on server start
+	USoccerFormationManager* FormationManager = USoccerFormationManager::Get();
+	if (FormationManager)
+	{
+		FormationManager->ApplyDefaultFormation(1);
+		FormationManager->ApplyDefaultFormation(2);
+	}
+
 	if (ASoccerGameState* GameState = GetGameState<ASoccerGameState>())
 	{
 		GameState->SetMatchActive(false);
