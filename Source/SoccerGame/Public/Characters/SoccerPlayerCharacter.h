@@ -120,6 +120,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Goalkeeper")
 	void DiveForSave();
 
+
+	 // Goalkeeper behavior
+	 class UGoalkeeperBehaviorComponent* GoalkeeperBehaviorComponent;
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Goalkeeper")
 	void AttemptGoalkeeperSave();
 
