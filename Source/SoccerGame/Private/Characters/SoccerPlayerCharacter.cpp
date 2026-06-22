@@ -22,6 +22,7 @@
 #include "Game/SoccerGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/SpecialMoveComponent.h"
+#include "AI/TacticalDecisionComponent.h"
 
 ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	: TeamId(1)
@@ -100,6 +101,9 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 
 	// Special move component
 	SpecialMoveComponent = CreateDefaultSubobject<USpecialMoveComponent>(TEXT("SpecialMoveComponent"));
+
+	// Tactical decision component
+	TacticalDecisionComponent = CreateDefaultSubobject<UTacticalDecisionComponent>(TEXT("TacticalDecisionComponent"));
 
 	// Create camera boom (pulls toward player if there's a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));

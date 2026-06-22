@@ -297,6 +297,12 @@ private:
 	// Special move component
 	class USpecialMoveComponent* SpecialMoveComponent;
 
+	// Tactical decision component
+	class UTacticalDecisionComponent* TacticalDecisionComponent;
+
+public:
+	UTacticalDecisionComponent* GetTacticalDecisionComponent() const { return TacticalDecisionComponent; }
+
 	// Animation
 	void UpdateAnimations();
 
