@@ -269,6 +269,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Input")
 	class UInputAction* JumpAction;
+    
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Input")
+	class UInputAction* SpecialMoveAction;
+	// Special moves
+	UFUNCTION(BlueprintCallable, Category = "Soccer|SpecialMove")
+	void TriggerSpecialMove();
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|SpecialMove")
+	bool CanTriggerSpecialMove() const;
 
 private:
 	// Internal stamina management
@@ -284,6 +293,9 @@ private:
 
 	// Ball interaction helpers
 	ASoccerBall* FindNearestBall(float MaxDistance) const;
+
+	// Special move component
+	class USpecialMoveComponent* SpecialMoveComponent;
 
 	// Animation
 	void UpdateAnimations();

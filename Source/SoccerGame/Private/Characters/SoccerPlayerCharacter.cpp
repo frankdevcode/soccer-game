@@ -21,6 +21,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "Game/SoccerGameState.h"
 #include "Kismet/GameplayStatics.h"
+#include "Gameplay/SpecialMoveComponent.h"
 
 ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	: TeamId(1)
@@ -96,6 +97,9 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	// Motion matching component
 	MotionMatchingComponent = CreateDefaultSubobject<USoccerMotionMatchingComponent>(TEXT("MotionMatchingComponent"));
 	bUseControllerRotationRoll = false;
+
+	// Special move component
+	SpecialMoveComponent = CreateDefaultSubobject<USpecialMoveComponent>(TEXT("SpecialMoveComponent"));
 
 	// Create camera boom (pulls toward player if there's a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -194,6 +198,12 @@ void ASoccerPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		// Kicking
 		EnhancedInputComponent->BindAction(KickAction, ETriggerEvent::Triggered, this, &ASoccerPlayerCharacter::KickBall);
+
+		// Special moves
+		if (SpecialMoveAction)
+		{
+			EnhancedInputComponent->BindAction(SpecialMoveAction, ETriggerEvent::Started, this, &ASoccerPlayerCharacter::TriggerSpecialMove);
+		}
 
 		// Goalkeeper save / dive
 		if (SaveAction)
@@ -690,4 +700,18 @@ void ASoccerPlayerCharacter::UpdateAnimations()
 	{
 		AnimInstance->UpdateState(Speed, Direction, bMoving, bIsSprinting, bInAir, PlayerPosition == EPlayerPosition::Goalkeeper, bIsPerformingSave, BestPose);
 	}
+}
+
+void ASoccerPlayerCharacter::TriggerSpecialMove()
+{
+	if (SpecialMoveComponent && SpecialMoveComponent->CanExecuteMove())
+	{
+		SpecialMoveComponent->TriggerMove(FName("DefaultSpecial"));
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Triggered special move"));
+	}
+}
+
+bool ASoccerPlayerCharacter::CanTriggerSpecialMove() const
+{
+	return SpecialMoveComponent && SpecialMoveComponent->CanExecuteMove();
 }

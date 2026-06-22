@@ -14,6 +14,7 @@ enum class EPlayerAnimationState : uint8
 	Run UMETA(DisplayName = "Run"),
 	Sprint UMETA(DisplayName = "Sprint"),
 	Jump UMETA(DisplayName = "Jump"),
+	SpecialMove UMETA(DisplayName = "SpecialMove"),
 	Save UMETA(DisplayName = "Save"),
 	Fall UMETA(DisplayName = "Fall")
 };
@@ -61,6 +62,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
 	bool bIsPerformingSave;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
+	bool bIsPerformingSpecialMove;
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Animation")
+	void PlaySpecialMove(FName MoveName);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|Animation")
 	FName MotionMatchPose;

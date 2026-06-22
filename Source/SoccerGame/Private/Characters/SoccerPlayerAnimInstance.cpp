@@ -12,6 +12,7 @@ USoccerPlayerAnimInstance::USoccerPlayerAnimInstance()
 	, bIsJumping(false)
 	, bIsGoalkeeper(false)
 	, bIsPerformingSave(false)
+	, bIsPerformingSpecialMove(false)
 {
 }
 
@@ -42,6 +43,13 @@ void USoccerPlayerAnimInstance::UpdateState(float InSpeed, float InDirection, bo
 	bIsPerformingSave = bIsPerformingSaveParam;
 	MotionMatchPose = InMotionMatchPose;
 
+	// If a special move flag is set, override state
+	if (bIsPerformingSpecialMove)
+	{
+		AnimationState = EPlayerAnimationState::SpecialMove;
+		return;
+	}
+
 	if (bIsPerformingSave)
 	{
 		AnimationState = EPlayerAnimationState::Save;
@@ -62,4 +70,14 @@ void USoccerPlayerAnimInstance::UpdateState(float InSpeed, float InDirection, bo
 	{
 		AnimationState = EPlayerAnimationState::Idle;
 	}
+}
+
+void USoccerPlayerAnimInstance::PlaySpecialMove(FName MoveName)
+{
+	bIsPerformingSpecialMove = true;
+	MotionMatchPose = MoveName;
+	AnimationState = EPlayerAnimationState::SpecialMove;
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerAnimInstance] Playing special move: %s"), *MoveName.ToString());
+
+	// Note: animation reset will be handled by gameplay code or animation notify in real setup.
 }
