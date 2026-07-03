@@ -44,6 +44,15 @@ public:
 	void StartMatch();
 
 	/**
+	 * @brief Start a quick match with automatic player spawning for testing
+	 * @param TeamSize Number of players per team (default 5)
+	 * @param Duration Match duration in seconds
+	 * @param bAutoStart If true, the match will start immediately after setup
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Match")
+	void StartQuickMatch(int32 TeamSize = 5, float Duration = 600.0f, bool bAutoStart = true);
+
+	/**
 	 * @brief End the match
 	 * @param WinningTeamId ID of winning team (-1 for draw)
 	 */

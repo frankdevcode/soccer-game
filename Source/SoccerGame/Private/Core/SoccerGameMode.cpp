@@ -6,6 +6,9 @@
 #include "Game/SoccerGameState.h"
 #include "Tools/SoccerMatchManager.h"
 #include "Tools/SoccerTeamManager.h"
+#include "Characters/SoccerPlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "AI/SimpleAIController.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASoccerGameMode::ASoccerGameMode()
@@ -215,4 +218,76 @@ void ASoccerGameMode::UpdateMatchTime(float DeltaTime)
 void ASoccerGameMode::CheckMatchConditions()
 {
 	// TODO: Implement match condition checks (goals, fouls, etc.)
+}
+
+void ASoccerGameMode::StartQuickMatch(int32 TeamSize, float Duration, bool bAutoStart)
+{
+	PlayersPerTeam = TeamSize;
+	InitializeMatch(TeamSize, Duration);
+
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	UClass* PawnClass = DefaultPawnClass ? DefaultPawnClass : nullptr;
+
+	// Fallback spawn points if none provided
+	if (Team1SpawnPoints.Num() == 0)
+	{
+		Team1SpawnPoints.Add(FVector(-800.0f, -300.0f, 100.0f));
+		Team1SpawnPoints.Add(FVector(-600.0f, -100.0f, 100.0f));
+		Team1SpawnPoints.Add(FVector(-600.0f, 100.0f, 100.0f));
+		Team1SpawnPoints.Add(FVector(-400.0f, -200.0f, 100.0f));
+		Team1SpawnPoints.Add(FVector(-400.0f, 200.0f, 100.0f));
+	}
+
+	if (Team2SpawnPoints.Num() == 0)
+	{
+		// Mirror positions for team 2
+		for (const FVector& V : Team1SpawnPoints)
+		{
+			Team2SpawnPoints.Add(FVector(-V.X, -V.Y, V.Z));
+		}
+	}
+
+	// Spawn players for both teams
+	for (int32 Team = 1; Team <= 2; ++Team)
+	{
+		const TArray<FVector>& Spawns = (Team == 1) ? Team1SpawnPoints : Team2SpawnPoints;
+
+		for (int32 i = 0; i < TeamSize; ++i)
+		{
+			const FVector SpawnLoc = Spawns.IsValidIndex(i) ? Spawns[i] : Spawns[i % Spawns.Num()];
+			FActorSpawnParameters Params;
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+			APawn* Pawn = nullptr;
+			if (PawnClass)
+			{
+				Pawn = World->SpawnActor<APawn>(PawnClass, SpawnLoc, FRotator::ZeroRotator, Params);
+			}
+
+			if (!Pawn) continue;
+
+			// Ensure AI possesses the pawn
+			Pawn->SpawnDefaultController();
+
+			ASoccerPlayerCharacter* PlayerChar = Cast<ASoccerPlayerCharacter>(Pawn);
+			if (PlayerChar)
+			{
+				// Assign logical role: 0 -> GK, others distribution
+				EPlayerPosition Role = EPlayerPosition::Midfielder;
+				if (i == 0) Role = EPlayerPosition::Goalkeeper;
+				else if (i <= 2) Role = EPlayerPosition::Defender;
+				else if (i == 3) Role = EPlayerPosition::Midfielder;
+				else Role = EPlayerPosition::Forward;
+
+				PlayerChar->InitializePlayer(Team, Role, i + 1);
+			}
+		}
+	}
+
+	if (bAutoStart)
+	{
+		StartMatch();
+	}
 }
