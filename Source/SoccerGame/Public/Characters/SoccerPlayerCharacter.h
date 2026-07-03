@@ -310,6 +310,12 @@ private:
 	// Tactical decision component
 	class UTacticalDecisionComponent* TacticalDecisionComponent;
 
+	// Decision tree / state machine component
+	class USoccerDecisionTreeComponent* DecisionTreeComponent;
+
+public:
+	USoccerDecisionTreeComponent* GetDecisionTreeComponent() const { return DecisionTreeComponent; }
+
 public:
 	UTacticalDecisionComponent* GetTacticalDecisionComponent() const { return TacticalDecisionComponent; }
 

@@ -24,6 +24,7 @@
 #include "Gameplay/SpecialMoveComponent.h"
 #include "AI/TacticalDecisionComponent.h"
 #include "AI/GoalkeeperBehaviorComponent.h"
+#include "AI/SoccerDecisionTreeComponent.h"
 
 ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	: TeamId(1)
@@ -108,6 +109,9 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 
 	// Goalkeeper behavior component (created for all, active only if player is GK)
 	GoalkeeperBehaviorComponent = CreateDefaultSubobject<UGoalkeeperBehaviorComponent>(TEXT("GoalkeeperBehaviorComponent"));
+
+	// Decision tree component
+	DecisionTreeComponent = CreateDefaultSubobject<USoccerDecisionTreeComponent>(TEXT("DecisionTreeComponent"));
 
 	// Create camera boom (pulls toward player if there's a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
