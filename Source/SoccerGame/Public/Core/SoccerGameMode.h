@@ -53,6 +53,14 @@ public:
 	void StartQuickMatch(int32 TeamSize = 5, float Duration = 600.0f, bool bAutoStart = true);
 
 	/**
+	 * @brief Start Career/Professional mode for a player profile
+	 * @param PlayerName Name for the career player
+	 * @param bAutoStartMatch If true, begin a quick match after profile creation
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Career")
+	void StartCareerMode(const FString& PlayerName = TEXT("Player"), bool bAutoStartMatch = true);
+
+	/**
 	 * @brief End the match
 	 * @param WinningTeamId ID of winning team (-1 for draw)
 	 */

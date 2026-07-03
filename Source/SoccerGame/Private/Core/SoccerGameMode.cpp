@@ -9,6 +9,7 @@
 #include "Characters/SoccerPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "AI/SimpleAIController.h"
+#include "Tools/SoccerCareerManager.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASoccerGameMode::ASoccerGameMode()
@@ -289,5 +290,19 @@ void ASoccerGameMode::StartQuickMatch(int32 TeamSize, float Duration, bool bAuto
 	if (bAutoStart)
 	{
 		StartMatch();
+	}
+}
+
+void ASoccerGameMode::StartCareerMode(const FString& PlayerName, bool bAutoStartMatch)
+{
+	USoccerCareerManager* Career = USoccerCareerManager::Get();
+	if (!Career) return;
+
+	Career->StartCareer(PlayerName);
+
+	// Optionally start a quick match to jump into gameplay with the created profile
+	if (bAutoStartMatch)
+	{
+		StartQuickMatch(PlayersPerTeam, MatchDurationSeconds, true);
 	}
 }
