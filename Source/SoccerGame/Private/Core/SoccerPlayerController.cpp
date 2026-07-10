@@ -3,15 +3,18 @@
 #include "Core/SoccerPlayerController.h"
 #include "Characters/SoccerPlayerCharacter.h"
 #include "UI/SoccerMainMenuWidget.h"
+#include "UI/SoccerInGameHUDWidget.h"
 #include "Blueprint/UserWidget.h"
 
 ASoccerPlayerController::ASoccerPlayerController()
 	: bShowHUD(true)
 	, bShowPauseMenu(false)
 	, MainMenuWidget(nullptr)
+	, InGameHUDWidget(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MainMenuWidgetClass = USoccerMainMenuWidget::StaticClass();
+	InGameHUDWidgetClass = USoccerInGameHUDWidget::StaticClass();
 }
 
 void ASoccerPlayerController::BeginPlay()
@@ -73,6 +76,38 @@ void ASoccerPlayerController::HidePauseMenu()
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Pause menu hidden"));
 }
 
+void ASoccerPlayerController::ShowInGameHUD()
+{
+	if (InGameHUDWidgetClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] InGameHUDWidgetClass not set"));
+		return;
+	}
+
+	if (InGameHUDWidget == nullptr)
+	{
+		InGameHUDWidget = CreateWidget<USoccerInGameHUDWidget>(this, InGameHUDWidgetClass);
+	}
+
+	if (InGameHUDWidget)
+	{
+		InGameHUDWidget->AddToViewport();
+		bShowHUD = true;
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] In-game HUD shown"));
+	}
+}
+
+void ASoccerPlayerController::HideInGameHUD()
+{
+	if (InGameHUDWidget)
+	{
+		InGameHUDWidget->RemoveFromParent();
+	}
+
+	bShowHUD = false;
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] In-game HUD hidden"));
+}
+
 void ASoccerPlayerController::ShowMainMenu()
 {
 	if (MainMenuWidgetClass == nullptr)
@@ -88,6 +123,11 @@ void ASoccerPlayerController::ShowMainMenu()
 
 	if (MainMenuWidget)
 	{
+		if (InGameHUDWidget)
+		{
+			InGameHUDWidget->RemoveFromParent();
+		}
+
 		MainMenuWidget->AddToViewport();
 		bShowHUD = false;
 		SetShowMouseCursor(true);
@@ -102,6 +142,8 @@ void ASoccerPlayerController::HideMainMenu()
 	{
 		MainMenuWidget->RemoveFromParent();
 	}
+
+	ShowInGameHUD();
 
 	bShowHUD = true;
 	SetShowMouseCursor(false);

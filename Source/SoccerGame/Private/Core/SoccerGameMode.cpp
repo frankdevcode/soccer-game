@@ -1,6 +1,7 @@
 // Copyright Frank Dev Code. All Rights Reserved.
 
 #include "Core/SoccerGameMode.h"
+#include "Core/SoccerPlayerController.h"
 #include "GameFramework/GameState.h"
 #include "GameFramework/PlayerController.h"
 #include "Game/SoccerGameState.h"
@@ -162,6 +163,14 @@ void ASoccerGameMode::StartMatch()
 	{
 		GameState->SetMatchActive(true);
 		GameState->SetMatchElapsedTime(0.0f);
+	}
+
+	if (APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0))
+	{
+		if (ASoccerPlayerController* SoccerPC = Cast<ASoccerPlayerController>(PC))
+		{
+			SoccerPC->ShowInGameHUD();
+		}
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerGameMode] Match started"));

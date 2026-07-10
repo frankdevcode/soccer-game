@@ -9,6 +9,7 @@
 
 class ASoccerPlayerCharacter;
 class USoccerMainMenuWidget;
+class USoccerInGameHUDWidget;
 
 /**
  * @class ASoccerPlayerController
@@ -38,6 +39,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
 	void HideMainHUD();
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
+	void ShowInGameHUD();
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
+	void HideInGameHUD();
 
 	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
 	void ShowPauseMenu();
@@ -71,8 +78,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|UI", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UUserWidget> MainMenuWidgetClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|UI", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> InGameHUDWidgetClass;
+
 	UPROPERTY()
 	USoccerMainMenuWidget* MainMenuWidget;
+
+	UPROPERTY()
+	USoccerInGameHUDWidget* InGameHUDWidget;
 
 private:
 	// Synchronization timer
