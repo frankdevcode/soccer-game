@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Blueprint/UserWidget.h"
 #include "SoccerPlayerController.generated.h"
 
 class ASoccerPlayerCharacter;
+class USoccerMainMenuWidget;
 
 /**
  * @class ASoccerPlayerController
@@ -43,6 +45,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
 	void HidePauseMenu();
 
+	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
+	void ShowMainMenu();
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
+	void HideMainMenu();
+
 	// Backend communication
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Backend")
 	void SendPlayerStateToBackend();
@@ -59,6 +67,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|UI")
 	bool bShowPauseMenu;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|UI", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> MainMenuWidgetClass;
+
+	UPROPERTY()
+	USoccerMainMenuWidget* MainMenuWidget;
 
 private:
 	// Synchronization timer

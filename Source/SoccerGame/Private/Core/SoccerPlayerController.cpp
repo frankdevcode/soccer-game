@@ -2,12 +2,16 @@
 
 #include "Core/SoccerPlayerController.h"
 #include "Characters/SoccerPlayerCharacter.h"
+#include "UI/SoccerMainMenuWidget.h"
+#include "Blueprint/UserWidget.h"
 
 ASoccerPlayerController::ASoccerPlayerController()
 	: bShowHUD(true)
 	, bShowPauseMenu(false)
+	, MainMenuWidget(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
+	MainMenuWidgetClass = USoccerMainMenuWidget::StaticClass();
 }
 
 void ASoccerPlayerController::BeginPlay()
@@ -24,6 +28,8 @@ void ASoccerPlayerController::BeginPlay()
 		1.0f,
 		true
 	);
+
+	ShowMainMenu();
 }
 
 void ASoccerPlayerController::Tick(float DeltaTime)
@@ -65,6 +71,42 @@ void ASoccerPlayerController::HidePauseMenu()
 	SetPause(false);
 
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Pause menu hidden"));
+}
+
+void ASoccerPlayerController::ShowMainMenu()
+{
+	if (MainMenuWidgetClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] MainMenuWidgetClass not set"));
+		return;
+	}
+
+	if (MainMenuWidget == nullptr)
+	{
+		MainMenuWidget = CreateWidget<USoccerMainMenuWidget>(this, MainMenuWidgetClass);
+	}
+
+	if (MainMenuWidget)
+	{
+		MainMenuWidget->AddToViewport();
+		bShowHUD = false;
+		SetShowMouseCursor(true);
+		SetInputMode(FInputModeUIOnly());
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Main menu shown"));
+	}
+}
+
+void ASoccerPlayerController::HideMainMenu()
+{
+	if (MainMenuWidget)
+	{
+		MainMenuWidget->RemoveFromParent();
+	}
+
+	bShowHUD = true;
+	SetShowMouseCursor(false);
+	SetInputMode(FInputModeGameOnly());
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Main menu hidden"));
 }
 
 void ASoccerPlayerController::SendPlayerStateToBackend()
