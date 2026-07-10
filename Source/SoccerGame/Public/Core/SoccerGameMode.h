@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Tools/SoccerTrainingManager.h"
 #include "SoccerGameMode.generated.h"
 
 class ASoccerPlayerCharacter;
@@ -59,6 +60,18 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Career")
 	void StartCareerMode(const FString& PlayerName = TEXT("Player"), bool bAutoStartMatch = true);
+
+	/**
+	 * @brief Start the training mode with a single drill
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Training")
+	void StartTrainingMode(ETrainingDrillType DrillType = ETrainingDrillType::Shooting);
+
+	/**
+	 * @brief End the training session and return to menu or quick match state
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Training")
+	void EndTrainingMode();
 
 	/**
 	 * @brief End the match

@@ -7,9 +7,11 @@
 #include "Tools/SoccerMatchManager.h"
 #include "Tools/SoccerTeamManager.h"
 #include "Characters/SoccerPlayerCharacter.h"
+#include "Ball/SoccerBall.h"
 #include "Kismet/GameplayStatics.h"
 #include "AI/SimpleAIController.h"
 #include "Tools/SoccerCareerManager.h"
+#include "Tools/SoccerTrainingManager.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASoccerGameMode::ASoccerGameMode()
@@ -305,4 +307,67 @@ void ASoccerGameMode::StartCareerMode(const FString& PlayerName, bool bAutoStart
 	{
 		StartQuickMatch(PlayersPerTeam, MatchDurationSeconds, true);
 	}
+}
+
+void ASoccerGameMode::StartTrainingMode(ETrainingDrillType DrillType)
+{
+	USoccerTrainingManager* TrainingManager = USoccerTrainingManager::Get();
+	if (!TrainingManager)
+	{
+		return;
+	}
+
+	TrainingManager->StartTrainingSession(DrillType);
+
+	// The training mode currently uses a reduced solo match.
+	// It sets up the field, spawns a single controlled player, and provides a training drill.
+	InitializeMatch(1, 300.0f);
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	UClass* PawnClass = DefaultPawnClass ? DefaultPawnClass : nullptr;
+
+	// Spawn a single training player
+	if (PawnClass)
+	{
+		FVector TrainingSpawn(0.0f, -400.0f, 100.0f);
+		FActorSpawnParameters Params;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		APawn* Pawn = World->SpawnActor<APawn>(PawnClass, TrainingSpawn, FRotator::ZeroRotator, Params);
+		if (Pawn)
+		{
+			Pawn->SpawnDefaultController();
+			ASoccerPlayerCharacter* PlayerChar = Cast<ASoccerPlayerCharacter>(Pawn);
+			if (PlayerChar)
+			{
+				PlayerChar->InitializePlayer(1, EPlayerPosition::Forward, 1);
+				PlayerChar->SetFormationTarget(FVector(0.0f, 0.0f, 0.0f));
+			}
+		}
+	}
+
+	// Optionally spawn a training ball at a fixed location
+	TArray<AActor*> BallActors;
+	UGameplayStatics::GetAllActorsOfClass(World, ASoccerBall::StaticClass(), BallActors);
+	if (BallActors.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[Training] No ball present for training session."));
+	}
+
+	StartMatch();
+}
+
+void ASoccerGameMode::EndTrainingMode()
+{
+	if (USoccerTrainingManager* TrainingManager = USoccerTrainingManager::Get())
+	{
+		TrainingManager->ResetTrainingSession();
+	}
+
+	EndMatch(-1);
 }
