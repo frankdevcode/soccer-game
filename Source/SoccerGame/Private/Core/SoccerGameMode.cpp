@@ -6,6 +6,7 @@
 #include "Game/SoccerGameState.h"
 #include "Tools/SoccerMatchManager.h"
 #include "Tools/SoccerTeamManager.h"
+#include "Tools/SoccerTournamentManager.h"
 #include "Characters/SoccerPlayerCharacter.h"
 #include "Ball/SoccerBall.h"
 #include "Kismet/GameplayStatics.h"
@@ -367,6 +368,59 @@ void ASoccerGameMode::EndTrainingMode()
 	if (USoccerTrainingManager* TrainingManager = USoccerTrainingManager::Get())
 	{
 		TrainingManager->ResetTrainingSession();
+	}
+
+	EndMatch(-1);
+}
+
+void ASoccerGameMode::StartTournamentMode(EGameTournamentType TournamentType, const TArray<int32>& TeamIds)
+{
+	USoccerTournamentManager* TournamentManager = USoccerTournamentManager::Get();
+	if (!TournamentManager)
+	{
+		return;
+	}
+
+	TArray<int32> TournamentTeams = TeamIds;
+	if (TournamentTeams.Num() < 2)
+	{
+		USoccerTeamManager* TeamManager = USoccerTeamManager::Get();
+		if (TeamManager)
+		{
+			for (const FSoccerTeamRecord& Team : TeamManager->GetTeams())
+			{
+				TournamentTeams.Add(Team.TeamId);
+				if (TournamentTeams.Num() >= 4)
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	if (TournamentTeams.Num() < 2)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[Tournament] Not enough teams configured for tournament."));
+		return;
+	}
+
+	if (!TournamentManager->InitializeTournament(TournamentType, TournamentTeams))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[Tournament] Failed to initialize tournament."));
+		return;
+	}
+
+	TournamentManager->StartTournament();
+	InitializeMatch(PlayersPerTeam, MatchDurationSeconds);
+
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerGameMode] Tournament started with %d teams."), TournamentTeams.Num());
+}
+
+void ASoccerGameMode::EndTournamentMode()
+{
+	if (USoccerTournamentManager* TournamentManager = USoccerTournamentManager::Get())
+	{
+		TournamentManager->ResetTournament();
 	}
 
 	EndMatch(-1);

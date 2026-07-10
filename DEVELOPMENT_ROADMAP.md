@@ -49,7 +49,7 @@
 - [ ] **Step 26**: Implement Quick Match mode
 - [ ] **Step 27**: Create Career/Professional mode
 - [x] **Step 28**: Develop Training mode
-- [ ] **Step 29**: Create Tournament system
+- [x] **Step 29**: Create Tournament system
 - [ ] **Step 30**: Implement match replay system
 
 ### **PHASE 7: User Interface & UX**

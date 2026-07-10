@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Tools/SoccerTrainingManager.h"
+#include "Tools/SoccerTournamentManager.h"
 #include "SoccerGameMode.generated.h"
 
 class ASoccerPlayerCharacter;
@@ -72,6 +73,18 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Training")
 	void EndTrainingMode();
+
+	/**
+	 * @brief Start a tournament mode with selected teams
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Tournament")
+	void StartTournamentMode(EGameTournamentType TournamentType = EGameTournamentType::Knockout, const TArray<int32>& TeamIds = TArray<int32>());
+
+	/**
+	 * @brief End the tournament session
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Tournament")
+	void EndTournamentMode();
 
 	/**
 	 * @brief End the match
