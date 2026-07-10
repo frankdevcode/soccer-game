@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "Tools/SoccerTrainingManager.h"
 #include "Tools/SoccerTournamentManager.h"
+#include "Tools/SoccerReplayManager.h"
 #include "SoccerGameMode.generated.h"
 
 class ASoccerPlayerCharacter;
@@ -85,6 +86,30 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Tournament")
 	void EndTournamentMode();
+
+	/**
+	 * @brief Start recording the current match for replay
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Replay")
+	void StartReplayRecording(const FString& ReplayName = TEXT("MatchReplay"));
+
+	/**
+	 * @brief Stop recording the current match replay
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Replay")
+	void StopReplayRecording();
+
+	/**
+	 * @brief Start playback of the last recorded replay
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Replay")
+	bool StartReplayPlayback();
+
+	/**
+	 * @brief Stop current replay playback
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Replay")
+	void StopReplayPlayback();
 
 	/**
 	 * @brief End the match

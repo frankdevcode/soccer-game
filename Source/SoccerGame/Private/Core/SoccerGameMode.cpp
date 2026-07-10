@@ -13,6 +13,7 @@
 #include "AI/SimpleAIController.h"
 #include "Tools/SoccerCareerManager.h"
 #include "Tools/SoccerTrainingManager.h"
+#include "Tools/SoccerReplayManager.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASoccerGameMode::ASoccerGameMode()
@@ -49,6 +50,13 @@ void ASoccerGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	USoccerReplayManager* ReplayManager = USoccerReplayManager::Get();
+	if (ReplayManager && ReplayManager->IsReplaying())
+	{
+		ReplayManager->TickReplay(DeltaTime);
+		return;
+	}
+
 	if (!bMatchActive || bMatchPaused)
 	{
 		return;
@@ -63,6 +71,18 @@ void ASoccerGameMode::Tick(float DeltaTime)
 	MatchManager->Tick(DeltaTime);
 	const FSoccerMatchSummary MatchSummary = MatchManager->GetSummary();
 	MatchElapsedTime = MatchSummary.ElapsedTime;
+
+	if (ReplayManager && ReplayManager->IsRecording())
+	{
+		TArray<AActor*> BallActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASoccerBall::StaticClass(), BallActors);
+		ASoccerBall* Ball = BallActors.Num() > 0 ? Cast<ASoccerBall>(BallActors[0]) : nullptr;
+
+		if (ASoccerGameState* GameState = GetGameState<ASoccerGameState>())
+		{
+			ReplayManager->RecordFrame(DeltaTime, GameState->GetRegisteredPlayers(), Ball);
+		}
+	}
 
 	if (!MatchSummary.bIsActive)
 	{
@@ -424,4 +444,42 @@ void ASoccerGameMode::EndTournamentMode()
 	}
 
 	EndMatch(-1);
+}
+
+void ASoccerGameMode::StartReplayRecording(const FString& ReplayName)
+{
+	USoccerReplayManager* ReplayManager = USoccerReplayManager::Get();
+	if (!ReplayManager)
+	{
+		return;
+	}
+
+	ReplayManager->StartRecording(ReplayName);
+}
+
+void ASoccerGameMode::StopReplayRecording()
+{
+	if (USoccerReplayManager* ReplayManager = USoccerReplayManager::Get())
+	{
+		ReplayManager->StopRecording();
+	}
+}
+
+bool ASoccerGameMode::StartReplayPlayback()
+{
+	USoccerReplayManager* ReplayManager = USoccerReplayManager::Get();
+	if (!ReplayManager)
+	{
+		return false;
+	}
+
+	return ReplayManager->StartReplay();
+}
+
+void ASoccerGameMode::StopReplayPlayback()
+{
+	if (USoccerReplayManager* ReplayManager = USoccerReplayManager::Get())
+	{
+		ReplayManager->StopReplay();
+	}
 }
