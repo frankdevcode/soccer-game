@@ -34,6 +34,9 @@ public:
     void OnTournamentModeClicked();
 
     UFUNCTION(BlueprintCallable, Category = "Soccer|Menu")
+    void OnSettingsClicked();
+
+    UFUNCTION(BlueprintCallable, Category = "Soccer|Menu")
     void OnExitClicked();
 
 protected:
@@ -58,6 +61,9 @@ private:
 
     UPROPERTY()
     UButton* TournamentModeButton;
+
+    UPROPERTY()
+    UButton* SettingsButton;
 
     UPROPERTY()
     UButton* ExitButton;

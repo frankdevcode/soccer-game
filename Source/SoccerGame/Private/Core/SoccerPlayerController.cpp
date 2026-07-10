@@ -5,6 +5,7 @@
 #include "UI/SoccerMainMenuWidget.h"
 #include "UI/SoccerInGameHUDWidget.h"
 #include "UI/SoccerPlayerCreationWidget.h"
+#include "UI/SoccerSettingsWidget.h"
 #include "Blueprint/UserWidget.h"
 
 ASoccerPlayerController::ASoccerPlayerController()
@@ -13,11 +14,13 @@ ASoccerPlayerController::ASoccerPlayerController()
 	, MainMenuWidget(nullptr)
 	, InGameHUDWidget(nullptr)
 	, PlayerCreationWidget(nullptr)
+	, SettingsWidget(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MainMenuWidgetClass = USoccerMainMenuWidget::StaticClass();
 	InGameHUDWidgetClass = USoccerInGameHUDWidget::StaticClass();
 	PlayerCreationWidgetClass = USoccerPlayerCreationWidget::StaticClass();
+	SettingsWidgetClass = USoccerSettingsWidget::StaticClass();
 }
 
 void ASoccerPlayerController::BeginPlay()
@@ -200,6 +203,50 @@ void ASoccerPlayerController::HidePlayerCreationScreen()
 	SetShowMouseCursor(false);
 	SetInputMode(FInputModeGameOnly());
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Player creation screen hidden"));
+}
+
+void ASoccerPlayerController::ShowSettingsScreen()
+{
+	if (SettingsWidgetClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] SettingsWidgetClass not set"));
+		return;
+	}
+
+	if (MainMenuWidget)
+	{
+		MainMenuWidget->RemoveFromParent();
+	}
+
+	if (InGameHUDWidget)
+	{
+		InGameHUDWidget->RemoveFromParent();
+	}
+
+	if (SettingsWidget == nullptr)
+	{
+		SettingsWidget = CreateWidget<USoccerSettingsWidget>(this, SettingsWidgetClass);
+	}
+
+	if (SettingsWidget)
+	{
+		SettingsWidget->AddToViewport();
+		bShowHUD = false;
+		SetShowMouseCursor(true);
+		SetInputMode(FInputModeUIOnly());
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Settings screen shown"));
+	}
+}
+
+void ASoccerPlayerController::HideSettingsScreen()
+{
+	if (SettingsWidget)
+	{
+		SettingsWidget->RemoveFromParent();
+	}
+
+	ShowMainMenu();
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Settings screen hidden"));
 }
 
 void ASoccerPlayerController::SendPlayerStateToBackend()

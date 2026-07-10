@@ -34,6 +34,7 @@ TSharedRef<SWidget> USoccerMainMenuWidget::RebuildWidget()
         TEXT("Career Mode"),
         TEXT("Training Mode"),
         TEXT("Tournament Mode"),
+        TEXT("Settings"),
         TEXT("Exit")
     };
 
@@ -42,6 +43,7 @@ TSharedRef<SWidget> USoccerMainMenuWidget::RebuildWidget()
         FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnCareerModeClicked),
         FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnTrainingModeClicked),
         FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnTournamentModeClicked),
+        FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnSettingsClicked),
         FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnExitClicked)
     };
 
@@ -62,7 +64,8 @@ TSharedRef<SWidget> USoccerMainMenuWidget::RebuildWidget()
             case 1: CareerModeButton = NewButton; break;
             case 2: TrainingModeButton = NewButton; break;
             case 3: TournamentModeButton = NewButton; break;
-            case 4: ExitButton = NewButton; break;
+            case 4: SettingsButton = NewButton; break;
+            case 5: ExitButton = NewButton; break;
             default: break;
         }
     }
@@ -114,6 +117,14 @@ void USoccerMainMenuWidget::OnTournamentModeClicked()
     if (OwningSoccerController)
     {
         OwningSoccerController->HideMainMenu();
+    }
+}
+
+void USoccerMainMenuWidget::OnSettingsClicked()
+{
+    if (OwningSoccerController)
+    {
+        OwningSoccerController->ShowSettingsScreen();
     }
 }
 

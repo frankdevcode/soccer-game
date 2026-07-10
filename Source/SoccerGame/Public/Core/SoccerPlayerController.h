@@ -11,6 +11,7 @@ class ASoccerPlayerCharacter;
 class USoccerMainMenuWidget;
 class USoccerInGameHUDWidget;
 class USoccerPlayerCreationWidget;
+class USoccerSettingsWidget;
 
 /**
  * @class ASoccerPlayerController
@@ -65,6 +66,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
 	void HidePlayerCreationScreen();
 
+	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
+	void ShowSettingsScreen();
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
+	void HideSettingsScreen();
+
 	// Backend communication
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Backend")
 	void SendPlayerStateToBackend();
@@ -91,6 +98,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|UI", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UUserWidget> PlayerCreationWidgetClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Soccer|UI", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> SettingsWidgetClass;
+
 	UPROPERTY()
 	USoccerMainMenuWidget* MainMenuWidget;
 
@@ -99,6 +109,9 @@ protected:
 
 	UPROPERTY()
 	USoccerPlayerCreationWidget* PlayerCreationWidget;
+
+	UPROPERTY()
+	USoccerSettingsWidget* SettingsWidget;
 
 private:
 	// Synchronization timer
