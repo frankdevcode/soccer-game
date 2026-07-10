@@ -37,6 +37,9 @@ public:
     void OnSettingsClicked();
 
     UFUNCTION(BlueprintCallable, Category = "Soccer|Menu")
+    void OnStatisticsClicked();
+
+    UFUNCTION(BlueprintCallable, Category = "Soccer|Menu")
     void OnExitClicked();
 
 protected:
@@ -64,6 +67,9 @@ private:
 
     UPROPERTY()
     UButton* SettingsButton;
+
+    UPROPERTY()
+    UButton* StatisticsButton;
 
     UPROPERTY()
     UButton* ExitButton;

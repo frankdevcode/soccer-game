@@ -35,6 +35,7 @@ TSharedRef<SWidget> USoccerMainMenuWidget::RebuildWidget()
         TEXT("Training Mode"),
         TEXT("Tournament Mode"),
         TEXT("Settings"),
+        TEXT("Statistics"),
         TEXT("Exit")
     };
 
@@ -44,6 +45,7 @@ TSharedRef<SWidget> USoccerMainMenuWidget::RebuildWidget()
         FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnTrainingModeClicked),
         FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnTournamentModeClicked),
         FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnSettingsClicked),
+        FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnStatisticsClicked),
         FOnClicked::CreateUObject(this, &USoccerMainMenuWidget::OnExitClicked)
     };
 
@@ -125,6 +127,14 @@ void USoccerMainMenuWidget::OnSettingsClicked()
     if (OwningSoccerController)
     {
         OwningSoccerController->ShowSettingsScreen();
+    }
+}
+
+void USoccerMainMenuWidget::OnStatisticsClicked()
+{
+    if (OwningSoccerController)
+    {
+        OwningSoccerController->ShowStatisticsScreen();
     }
 }
 

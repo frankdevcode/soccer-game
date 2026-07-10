@@ -6,6 +6,7 @@
 #include "UI/SoccerInGameHUDWidget.h"
 #include "UI/SoccerPlayerCreationWidget.h"
 #include "UI/SoccerSettingsWidget.h"
+#include "UI/SoccerStatisticsWidget.h"
 #include "Blueprint/UserWidget.h"
 
 ASoccerPlayerController::ASoccerPlayerController()
@@ -15,12 +16,14 @@ ASoccerPlayerController::ASoccerPlayerController()
 	, InGameHUDWidget(nullptr)
 	, PlayerCreationWidget(nullptr)
 	, SettingsWidget(nullptr)
+	, StatisticsWidget(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MainMenuWidgetClass = USoccerMainMenuWidget::StaticClass();
 	InGameHUDWidgetClass = USoccerInGameHUDWidget::StaticClass();
 	PlayerCreationWidgetClass = USoccerPlayerCreationWidget::StaticClass();
 	SettingsWidgetClass = USoccerSettingsWidget::StaticClass();
+	StatisticsWidgetClass = USoccerStatisticsWidget::StaticClass();
 }
 
 void ASoccerPlayerController::BeginPlay()
@@ -247,6 +250,50 @@ void ASoccerPlayerController::HideSettingsScreen()
 
 	ShowMainMenu();
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Settings screen hidden"));
+}
+
+void ASoccerPlayerController::ShowStatisticsScreen()
+{
+	if (StatisticsWidgetClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] StatisticsWidgetClass not set"));
+		return;
+	}
+
+	if (MainMenuWidget)
+	{
+		MainMenuWidget->RemoveFromParent();
+	}
+
+	if (InGameHUDWidget)
+	{
+		InGameHUDWidget->RemoveFromParent();
+	}
+
+	if (StatisticsWidget == nullptr)
+	{
+		StatisticsWidget = CreateWidget<USoccerStatisticsWidget>(this, StatisticsWidgetClass);
+	}
+
+	if (StatisticsWidget)
+	{
+		StatisticsWidget->AddToViewport();
+		bShowHUD = false;
+		SetShowMouseCursor(true);
+		SetInputMode(FInputModeUIOnly());
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Statistics screen shown"));
+	}
+}
+
+void ASoccerPlayerController::HideStatisticsScreen()
+{
+	if (StatisticsWidget)
+	{
+		StatisticsWidget->RemoveFromParent();
+	}
+
+	ShowMainMenu();
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Statistics screen hidden"));
 }
 
 void ASoccerPlayerController::SendPlayerStateToBackend()
