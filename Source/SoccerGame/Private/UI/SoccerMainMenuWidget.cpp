@@ -85,14 +85,9 @@ void USoccerMainMenuWidget::OnQuickMatchClicked()
 
 void USoccerMainMenuWidget::OnCareerModeClicked()
 {
-    if (SoccerGameMode)
-    {
-        SoccerGameMode->StartCareerMode();
-    }
-
     if (OwningSoccerController)
     {
-        OwningSoccerController->HideMainMenu();
+        OwningSoccerController->ShowPlayerCreationScreen();
     }
 }
 

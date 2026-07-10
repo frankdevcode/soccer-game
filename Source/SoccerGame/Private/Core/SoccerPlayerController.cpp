@@ -4,6 +4,7 @@
 #include "Characters/SoccerPlayerCharacter.h"
 #include "UI/SoccerMainMenuWidget.h"
 #include "UI/SoccerInGameHUDWidget.h"
+#include "UI/SoccerPlayerCreationWidget.h"
 #include "Blueprint/UserWidget.h"
 
 ASoccerPlayerController::ASoccerPlayerController()
@@ -11,10 +12,12 @@ ASoccerPlayerController::ASoccerPlayerController()
 	, bShowPauseMenu(false)
 	, MainMenuWidget(nullptr)
 	, InGameHUDWidget(nullptr)
+	, PlayerCreationWidget(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MainMenuWidgetClass = USoccerMainMenuWidget::StaticClass();
 	InGameHUDWidgetClass = USoccerInGameHUDWidget::StaticClass();
+	PlayerCreationWidgetClass = USoccerPlayerCreationWidget::StaticClass();
 }
 
 void ASoccerPlayerController::BeginPlay()
@@ -149,6 +152,54 @@ void ASoccerPlayerController::HideMainMenu()
 	SetShowMouseCursor(false);
 	SetInputMode(FInputModeGameOnly());
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Main menu hidden"));
+}
+
+void ASoccerPlayerController::ShowPlayerCreationScreen()
+{
+	if (PlayerCreationWidgetClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] PlayerCreationWidgetClass not set"));
+		return;
+	}
+
+	if (MainMenuWidget)
+	{
+		MainMenuWidget->RemoveFromParent();
+	}
+
+	if (InGameHUDWidget)
+	{
+		InGameHUDWidget->RemoveFromParent();
+	}
+
+	if (PlayerCreationWidget == nullptr)
+	{
+		PlayerCreationWidget = CreateWidget<USoccerPlayerCreationWidget>(this, PlayerCreationWidgetClass);
+	}
+
+	if (PlayerCreationWidget)
+	{
+		PlayerCreationWidget->AddToViewport();
+		bShowHUD = false;
+		SetShowMouseCursor(true);
+		SetInputMode(FInputModeUIOnly());
+		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Player creation screen shown"));
+	}
+}
+
+void ASoccerPlayerController::HidePlayerCreationScreen()
+{
+	if (PlayerCreationWidget)
+	{
+		PlayerCreationWidget->RemoveFromParent();
+	}
+
+	ShowInGameHUD();
+
+	bShowHUD = true;
+	SetShowMouseCursor(false);
+	SetInputMode(FInputModeGameOnly());
+	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Player creation screen hidden"));
 }
 
 void ASoccerPlayerController::SendPlayerStateToBackend()
