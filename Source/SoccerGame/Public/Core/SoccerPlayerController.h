@@ -13,6 +13,9 @@ class USoccerInGameHUDWidget;
 class USoccerPlayerCreationWidget;
 class USoccerSettingsWidget;
 class USoccerStatisticsWidget;
+class USoccerDynamicMusicComponent;
+
+#include "Audio/SoccerDynamicMusicComponent.h"
 
 /**
  * @class ASoccerPlayerController
@@ -79,6 +82,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|UI")
 	void HideStatisticsScreen();
 
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Audio")
+	void SetMusicState(ESoccerMusicState NewState);
+
 	// Backend communication
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Backend")
 	void SendPlayerStateToBackend();
@@ -125,6 +131,9 @@ protected:
 
 	UPROPERTY()
 	USoccerStatisticsWidget* StatisticsWidget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Audio")
+	USoccerDynamicMusicComponent* DynamicMusicComponent;
 
 private:
 	// Synchronization timer

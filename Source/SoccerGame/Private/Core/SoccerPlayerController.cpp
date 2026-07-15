@@ -7,6 +7,7 @@
 #include "UI/SoccerPlayerCreationWidget.h"
 #include "UI/SoccerSettingsWidget.h"
 #include "UI/SoccerStatisticsWidget.h"
+#include "Audio/SoccerDynamicMusicComponent.h"
 #include "Blueprint/UserWidget.h"
 
 ASoccerPlayerController::ASoccerPlayerController()
@@ -17,6 +18,7 @@ ASoccerPlayerController::ASoccerPlayerController()
 	, PlayerCreationWidget(nullptr)
 	, SettingsWidget(nullptr)
 	, StatisticsWidget(nullptr)
+	, DynamicMusicComponent(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MainMenuWidgetClass = USoccerMainMenuWidget::StaticClass();
@@ -24,6 +26,7 @@ ASoccerPlayerController::ASoccerPlayerController()
 	PlayerCreationWidgetClass = USoccerPlayerCreationWidget::StaticClass();
 	SettingsWidgetClass = USoccerSettingsWidget::StaticClass();
 	StatisticsWidgetClass = USoccerStatisticsWidget::StaticClass();
+	DynamicMusicComponent = CreateDefaultSubobject<USoccerDynamicMusicComponent>(TEXT("DynamicMusicComponent"));
 }
 
 void ASoccerPlayerController::BeginPlay()
@@ -40,6 +43,11 @@ void ASoccerPlayerController::BeginPlay()
 		1.0f,
 		true
 	);
+
+	if (DynamicMusicComponent)
+	{
+		DynamicMusicComponent->SetMusicState(ESoccerMusicState::Menu);
+	}
 
 	ShowMainMenu();
 }
@@ -102,6 +110,10 @@ void ASoccerPlayerController::ShowInGameHUD()
 	{
 		InGameHUDWidget->AddToViewport();
 		bShowHUD = true;
+		if (DynamicMusicComponent)
+		{
+			DynamicMusicComponent->SetMusicState(ESoccerMusicState::MatchAction);
+		}
 		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] In-game HUD shown"));
 	}
 }
@@ -141,10 +153,20 @@ void ASoccerPlayerController::ShowMainMenu()
 		bShowHUD = false;
 		SetShowMouseCursor(true);
 		SetInputMode(FInputModeUIOnly());
+		if (DynamicMusicComponent)
+		{
+			DynamicMusicComponent->SetMusicState(ESoccerMusicState::Menu);
+		}
 		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Main menu shown"));
 	}
 }
-
+void ASoccerPlayerController::SetMusicState(ESoccerMusicState NewState)
+{
+	if (DynamicMusicComponent)
+	{
+		DynamicMusicComponent->SetMusicState(NewState);
+	}
+}
 void ASoccerPlayerController::HideMainMenu()
 {
 	if (MainMenuWidget)
@@ -189,6 +211,10 @@ void ASoccerPlayerController::ShowPlayerCreationScreen()
 		bShowHUD = false;
 		SetShowMouseCursor(true);
 		SetInputMode(FInputModeUIOnly());
+		if (DynamicMusicComponent)
+		{
+			DynamicMusicComponent->SetMusicState(ESoccerMusicState::Menu);
+		}
 		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Player creation screen shown"));
 	}
 }
@@ -237,6 +263,10 @@ void ASoccerPlayerController::ShowSettingsScreen()
 		bShowHUD = false;
 		SetShowMouseCursor(true);
 		SetInputMode(FInputModeUIOnly());
+		if (DynamicMusicComponent)
+		{
+			DynamicMusicComponent->SetMusicState(ESoccerMusicState::Menu);
+		}
 		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Settings screen shown"));
 	}
 }
@@ -281,6 +311,10 @@ void ASoccerPlayerController::ShowStatisticsScreen()
 		bShowHUD = false;
 		SetShowMouseCursor(true);
 		SetInputMode(FInputModeUIOnly());
+		if (DynamicMusicComponent)
+		{
+			DynamicMusicComponent->SetMusicState(ESoccerMusicState::Menu);
+		}
 		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Statistics screen shown"));
 	}
 }
