@@ -9,6 +9,7 @@
 #include "UI/SoccerStatisticsWidget.h"
 #include "Audio/SoccerDynamicMusicComponent.h"
 #include "Visual/SoccerVisualEffectsComponent.h"
+#include "Online/SoccerOnlineManager.h"
 #include "Blueprint/UserWidget.h"
 
 ASoccerPlayerController::ASoccerPlayerController()
@@ -21,6 +22,7 @@ ASoccerPlayerController::ASoccerPlayerController()
 	, StatisticsWidget(nullptr)
 	, DynamicMusicComponent(nullptr)
 	, VisualEffectsComponent(nullptr)
+	, OnlineManager(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MainMenuWidgetClass = USoccerMainMenuWidget::StaticClass();
@@ -30,6 +32,7 @@ ASoccerPlayerController::ASoccerPlayerController()
 	StatisticsWidgetClass = USoccerStatisticsWidget::StaticClass();
 	DynamicMusicComponent = CreateDefaultSubobject<USoccerDynamicMusicComponent>(TEXT("DynamicMusicComponent"));
 	VisualEffectsComponent = CreateDefaultSubobject<USoccerVisualEffectsComponent>(TEXT("VisualEffectsComponent"));
+	OnlineManager = CreateDefaultSubobject<USoccerOnlineManager>(TEXT("OnlineManager"));
 }
 
 void ASoccerPlayerController::BeginPlay()
@@ -50,6 +53,11 @@ void ASoccerPlayerController::BeginPlay()
 	if (DynamicMusicComponent)
 	{
 		DynamicMusicComponent->SetMusicState(ESoccerMusicState::Menu);
+	}
+
+	if (OnlineManager)
+	{
+		OnlineManager->Initialize();
 	}
 
 	ShowMainMenu();
@@ -340,19 +348,62 @@ void ASoccerPlayerController::SendPlayerStateToBackend()
 		return;
 	}
 
-	// TODO: Implement backend communication
-	// Send current player position, stamina, stats to backend API
+	if (OnlineManager)
+	{
+		OnlineManager->SyncGameState(OnlineManager->GetActiveMatchId(), GetWorld()->GetTimeSeconds(), 0, 0);
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Sending player state to backend"));
 }
 
 void ASoccerPlayerController::RequestGameStateUpdate()
 {
-	// TODO: Implement backend communication
-	// Request latest game state from backend
+	if (OnlineManager)
+	{
+		OnlineManager->GetLocalProfile();
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerController] Requesting game state update from backend"));
 }
 
 void ASoccerPlayerController::SyncWithBackend()
 {
 	SendPlayerStateToBackend();
+}
+
+void ASoccerPlayerController::StartOnlineMatchmaking(const FString& PlayerName)
+{
+	if (OnlineManager)
+	{
+		OnlineManager->StartMatchmaking(PlayerName);
+	}
+}
+
+void ASoccerPlayerController::ConnectToOnlineMatch()
+{
+	if (OnlineManager)
+	{
+		OnlineManager->ConnectToMatch();
+	}
+}
+
+void ASoccerPlayerController::SyncOnlineMatchState(float MatchTime, int32 TeamAScore, int32 TeamBScore)
+{
+	if (OnlineManager)
+	{
+		OnlineManager->SyncGameState(OnlineManager->GetActiveMatchId(), MatchTime, TeamAScore, TeamBScore);
+	}
+}
+
+void ASoccerPlayerController::AwardOnlineXP(int32 Amount)
+{
+	if (OnlineManager)
+	{
+		OnlineManager->AwardXP(Amount);
+	}
+}
+
+FString ASoccerPlayerController::GetActiveOnlineMatchId() const
+{
+	return OnlineManager ? OnlineManager->GetActiveMatchId() : FString();
 }

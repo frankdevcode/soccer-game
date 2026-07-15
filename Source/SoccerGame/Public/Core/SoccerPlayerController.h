@@ -15,6 +15,7 @@ class USoccerSettingsWidget;
 class USoccerStatisticsWidget;
 class USoccerDynamicMusicComponent;
 class USoccerVisualEffectsComponent;
+class USoccerOnlineManager;
 
 #include "Audio/SoccerDynamicMusicComponent.h"
 
@@ -93,6 +94,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|Backend")
 	void RequestGameStateUpdate();
 
+	// Online / matchmaking
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Online")
+	void StartOnlineMatchmaking(const FString& PlayerName);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Online")
+	void ConnectToOnlineMatch();
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Online")
+	void SyncOnlineMatchState(float MatchTime, int32 TeamAScore, int32 TeamBScore);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Online")
+	void AwardOnlineXP(int32 Amount);
+
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Online")
+	FString GetActiveOnlineMatchId() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Controller")
 	class ASoccerPlayerCharacter* ControlledCharacter;
@@ -138,6 +155,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Visual")
 	USoccerVisualEffectsComponent* VisualEffectsComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Online")
+	USoccerOnlineManager* OnlineManager;
 
 private:
 	// Synchronization timer
