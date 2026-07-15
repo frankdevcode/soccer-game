@@ -14,6 +14,7 @@ class USoccerPlayerCreationWidget;
 class USoccerSettingsWidget;
 class USoccerStatisticsWidget;
 class USoccerDynamicMusicComponent;
+class USoccerVisualEffectsComponent;
 
 #include "Audio/SoccerDynamicMusicComponent.h"
 
@@ -134,6 +135,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Audio")
 	USoccerDynamicMusicComponent* DynamicMusicComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Visual")
+	USoccerVisualEffectsComponent* VisualEffectsComponent;
 
 private:
 	// Synchronization timer

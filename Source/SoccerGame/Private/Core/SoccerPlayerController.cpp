@@ -8,6 +8,7 @@
 #include "UI/SoccerSettingsWidget.h"
 #include "UI/SoccerStatisticsWidget.h"
 #include "Audio/SoccerDynamicMusicComponent.h"
+#include "Visual/SoccerVisualEffectsComponent.h"
 #include "Blueprint/UserWidget.h"
 
 ASoccerPlayerController::ASoccerPlayerController()
@@ -19,6 +20,7 @@ ASoccerPlayerController::ASoccerPlayerController()
 	, SettingsWidget(nullptr)
 	, StatisticsWidget(nullptr)
 	, DynamicMusicComponent(nullptr)
+	, VisualEffectsComponent(nullptr)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MainMenuWidgetClass = USoccerMainMenuWidget::StaticClass();
@@ -27,6 +29,7 @@ ASoccerPlayerController::ASoccerPlayerController()
 	SettingsWidgetClass = USoccerSettingsWidget::StaticClass();
 	StatisticsWidgetClass = USoccerStatisticsWidget::StaticClass();
 	DynamicMusicComponent = CreateDefaultSubobject<USoccerDynamicMusicComponent>(TEXT("DynamicMusicComponent"));
+	VisualEffectsComponent = CreateDefaultSubobject<USoccerVisualEffectsComponent>(TEXT("VisualEffectsComponent"));
 }
 
 void ASoccerPlayerController::BeginPlay()
