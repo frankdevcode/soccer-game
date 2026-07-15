@@ -16,6 +16,7 @@ class UAnimInstance;
 class USkeletalMesh;
 class UActorComponent;
 class USoccerMotionMatchingComponent;
+class USoccerAudioComponent;
 class ASoccerBall;
 class ASoccerPlayerCharacter;
 
@@ -286,6 +287,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Soccer|SpecialMove")
 	void TriggerSpecialMove();
 
+	UFUNCTION(BlueprintCallable, Category = "Soccer|Audio")
+	void PlayFootstepAudio();
+
 	UFUNCTION(BlueprintCallable, Category = "Soccer|SpecialMove")
 	bool CanTriggerSpecialMove() const;
 
@@ -306,6 +310,9 @@ private:
 
 	// Special move component
 	class USpecialMoveComponent* SpecialMoveComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Audio")
+	USoccerAudioComponent* AudioComponent;
 
 	// Tactical decision component
 	class UTacticalDecisionComponent* TacticalDecisionComponent;

@@ -113,6 +113,19 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Physics")
 	float KickPower;
 
+	// Audio settings
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Audio")
+	float MasterVolume;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Audio")
+	float SFXVolume;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Audio")
+	float AmbientVolume;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Audio")
+	bool bAudioEnabled;
+
 	// Network settings
 	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Soccer|Network")
 	FString BackendURL;

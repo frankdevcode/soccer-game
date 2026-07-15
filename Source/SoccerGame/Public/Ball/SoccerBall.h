@@ -9,6 +9,7 @@
 class USphereComponent;
 class UStaticMeshComponent;
 class UBallPhysicsComponent;
+class USoccerAudioComponent;
 
 /**
  * @class ASoccerBall
@@ -48,6 +49,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Ball")
 	UBallPhysicsComponent* BallPhysicsComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Soccer|Audio")
+	USoccerAudioComponent* AudioComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soccer|Ball")
 	float KickForceMultiplier;

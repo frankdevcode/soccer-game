@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Core/SoccerGameSettings.h"
 #include "Tools/SoccerPhysicsHelpers.h"
+#include "Audio/SoccerAudioComponent.h"
 
 ASoccerBall::ASoccerBall()
 	: KickForceMultiplier(1.0f)
@@ -24,6 +25,7 @@ ASoccerBall::ASoccerBall()
 	BallMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	BallPhysicsComponent = CreateDefaultSubobject<UBallPhysicsComponent>(TEXT("BallPhysicsComponent"));
+	AudioComponent = CreateDefaultSubobject<USoccerAudioComponent>(TEXT("SoccerAudioComponent"));
 }
 
 void ASoccerBall::BeginPlay()
@@ -77,6 +79,10 @@ void ASoccerBall::ApplyKick(const FVector& Direction, float Power)
 
 	const FVector Spin = FVector::CrossProduct(FVector::UpVector, NormalizedDirection) * 180.0f * Power;
 	BallPhysicsComponent->SetSpin(Spin);
+	if (AudioComponent)
+	{
+		AudioComponent->PlayKickSound();
+	}
 }
 
 void ASoccerBall::ApplyPass(const FVector& Direction, float Power)
@@ -93,6 +99,10 @@ void ASoccerBall::ApplyPass(const FVector& Direction, float Power)
 
 	const FVector Spin = FVector::CrossProduct(FVector::UpVector, NormalizedDirection) * 120.0f * Power;
 	BallPhysicsComponent->SetSpin(Spin);
+	if (AudioComponent)
+	{
+		AudioComponent->PlayPassSound();
+	}
 }
 
 void ASoccerBall::ApplyHeader(const FVector& Direction, float Power)
@@ -109,6 +119,10 @@ void ASoccerBall::ApplyHeader(const FVector& Direction, float Power)
 
 	const FVector Spin = FVector::CrossProduct(HeaderDirection, FVector::UpVector) * 220.0f * Power;
 	BallPhysicsComponent->SetSpin(Spin);
+	if (AudioComponent)
+	{
+		AudioComponent->PlayHeaderSound();
+	}
 }
 
 void ASoccerBall::ResetBall(const FVector& Location)
@@ -129,4 +143,8 @@ void ASoccerBall::HandleImpact(const FHitResult& Hit)
 	}
 
 	BallPhysicsComponent->ApplyCollisionResponseFromHit(Hit);
+	if (AudioComponent)
+	{
+		AudioComponent->PlayCollisionSound();
+	}
 }

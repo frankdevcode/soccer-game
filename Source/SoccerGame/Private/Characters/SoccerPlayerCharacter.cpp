@@ -25,6 +25,7 @@
 #include "AI/TacticalDecisionComponent.h"
 #include "AI/GoalkeeperBehaviorComponent.h"
 #include "AI/SoccerDecisionTreeComponent.h"
+#include "Audio/SoccerAudioComponent.h"
 
 ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 	: TeamId(1)
@@ -112,6 +113,9 @@ ASoccerPlayerCharacter::ASoccerPlayerCharacter()
 
 	// Decision tree component
 	DecisionTreeComponent = CreateDefaultSubobject<USoccerDecisionTreeComponent>(TEXT("DecisionTreeComponent"));
+
+	// Audio component
+	AudioComponent = CreateDefaultSubobject<USoccerAudioComponent>(TEXT("SoccerAudioComponent"));
 
 	// Create camera boom (pulls toward player if there's a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -365,6 +369,10 @@ void ASoccerPlayerCharacter::KickBall(float Power)
 			CurrentStamina -= 5.0f;
 			const FVector BallDirection = (Ball->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 			Ball->ApplyKick(BallDirection, Power);
+			if (AudioComponent)
+			{
+				AudioComponent->PlayKickSound();
+			}
 			UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Kicking ball with power %.1f"), Power);
 		}
 	}
@@ -397,6 +405,10 @@ void ASoccerPlayerCharacter::PassBall(AActor* TargetPlayer, float Power)
 	CurrentStamina -= 3.0f;
 	const FVector BallDirection = (PassTo->GetActorLocation() - Ball->GetActorLocation()).GetSafeNormal();
 	Ball->ApplyPass(BallDirection, Power);
+	if (AudioComponent)
+	{
+		AudioComponent->PlayPassSound();
+	}
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Passing ball to teammate %d with power %.1f"), PassTo->GetPlayerNumber(), Power);
 }
 
@@ -416,6 +428,10 @@ void ASoccerPlayerCharacter::HeadBall()
 	CurrentStamina -= 2.0f;
 	const FVector BallDirection = (Ball->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 	Ball->ApplyHeader(BallDirection, 1.0f);
+	if (AudioComponent)
+	{
+		AudioComponent->PlayHeaderSound();
+	}
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Heading ball"));
 }
 
@@ -603,6 +619,11 @@ void ASoccerPlayerCharacter::DiveForSave()
 	LastGoalkeeperDiveTime = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
 	bGoalkeeperCanDive = false;
 
+	if (AudioComponent)
+	{
+		AudioComponent->PlaySaveSound();
+	}
+
 	AttemptGoalkeeperSave();
 
 	UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Goalkeeper dive for save"));
@@ -732,6 +753,14 @@ void ASoccerPlayerCharacter::TriggerSpecialMove()
 	{
 		SpecialMoveComponent->TriggerMove(FName("DefaultSpecial"));
 		UE_LOG(LogTemp, Warning, TEXT("[SoccerPlayerCharacter] Triggered special move"));
+	}
+}
+
+void ASoccerPlayerCharacter::PlayFootstepAudio()
+{
+	if (AudioComponent)
+	{
+		AudioComponent->PlayFootstepSound();
 	}
 }
 

@@ -35,6 +35,10 @@ USoccerGameSettings::USoccerGameSettings()
 	, WallBounceCoefficient(0.55f)
 	, WallFriction(0.32f)
 	, KickPower(1000.0f)
+	, MasterVolume(1.0f)
+	, SFXVolume(1.0f)
+	, AmbientVolume(0.75f)
+	, bAudioEnabled(true)
 	, BackendURL(TEXT("localhost"))
 	, BackendPort(3001)
 	, NetworkTickRate(60.0f)
@@ -103,6 +107,10 @@ void USoccerGameSettings::SetDefaults()
 	WallBounceCoefficient = 0.55f;
 	WallFriction = 0.32f;
 	KickPower = 1000.0f;
+	MasterVolume = 1.0f;
+	SFXVolume = 1.0f;
+	AmbientVolume = 0.75f;
+	bAudioEnabled = true;
 	BackendURL = TEXT("localhost");
 	BackendPort = 3001;
 	NetworkTickRate = 60.0f;
